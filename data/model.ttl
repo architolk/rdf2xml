@@ -16,5 +16,15 @@
     sh:minCount 1;
     sh:maxCount 1;
     sh:datatype xsd:string;
+  ];
+  sh:property [
+    sh:path rdfs:seeAlso;
+    sh:name "rdfs:seeAlso";
+    sh:node <urn:relklasse-shape>
   ]
+.
+<urn:relklasse-shape> a sh:NodeShape;
+  sh:targetClass <urn:relklasse>;
+  sh:name "urn:relklasse";
+  rdfs:label "Gerelateerde klasse";
 .

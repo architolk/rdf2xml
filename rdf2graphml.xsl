@@ -7,7 +7,8 @@
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
 
-<xsl:output method="xml"/>
+<xsl:key name="items" match="/rdf:RDF/rdf:Description" use="@rdf:about"/>
+<xsl:key name="blanks" match="/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
 
 <xsl:template match="*" mode="label">
   <xsl:choose>
@@ -21,8 +22,6 @@
 	<graphml>
 		<key attr.name="url" attr.type="string" for="node" id="d3"/>
 		<key attr.name="url" attr.type="string" for="edge" id="d7"/>
-		<key attr.name="subject-uri" attr.type="string" for="edge" id="d90"/>
-		<key attr.name="object-uri" attr.type="string" for="edge" id="d91"/>
 		<key for="node" id="d6" yfiles.type="nodegraphics"/>
 		<key for="edge" id="d10" yfiles.type="edgegraphics"/>
 		<graph id="G" edgedefault="directed">
@@ -33,6 +32,7 @@
 
 <xsl:template match="rdf:RDF">
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="node"/>
+  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="edge"/>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="node">
@@ -47,7 +47,7 @@
 					<xsl:apply-templates select="." mode="label"/>
 				</y:NodeLabel>
 				<y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="top" visible="true" width="65.541015625" x="2.0" y="30.1328125">
-					<xsl:for-each select="sh:property">
+					<xsl:for-each select="key('blanks',sh:property/@rdf:nodeID)">
 						<xsl:if test="position()!=1"><xsl:text>
 </xsl:text></xsl:if><xsl:apply-templates select="." mode="label"/>
 					</xsl:for-each>
@@ -55,6 +55,29 @@
 			</y:GenericNode>
 		</data>
 	</node>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="edge">
+  <xsl:variable name="subject-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
+  <xsl:for-each select="key('blanks',sh:property/@rdf:nodeID)[exists(key('items',sh:node/@rdf:resource))]">
+    <edge source="{$subject-uri}" target="{sh:node/@rdf:resource}">
+			<data key="d10">
+				<xsl:element name="y:PolyLineEdge">
+					<y:LineStyle color="#000000" type="line" width="1.0"/>
+					<y:Arrows source="none" target="standard"/>
+					<y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true"><xsl:apply-templates select="." mode="label"/><y:LabelModel>
+							<y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+						</y:LabelModel>
+						<y:ModelParameter>
+							<y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
+						</y:ModelParameter>
+						<y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+					</y:EdgeLabel>
+					<y:BendStyle smoothed="false"/>
+				</xsl:element>
+			</data>
+		</edge>
+  </xsl:for-each>
 </xsl:template>
 
 </xsl:stylesheet>
