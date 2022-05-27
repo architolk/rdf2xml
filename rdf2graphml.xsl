@@ -4,11 +4,14 @@
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
   xmlns:sh="http://www.w3.org/ns/shacl#"
+  xmlns:graphml="http://graphml.graphdrawing.org/xmlns"
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
 
-<xsl:key name="items" match="/rdf:RDF/rdf:Description" use="@rdf:about"/>
-<xsl:key name="blanks" match="/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
+<xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about"/>
+<xsl:key name="blanks" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
+<xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
+<xsl:key name="node-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
 
 <xsl:template match="*" mode="label">
   <xsl:choose>
@@ -25,7 +28,7 @@
 		<key for="node" id="d6" yfiles.type="nodegraphics"/>
 		<key for="edge" id="d10" yfiles.type="edgegraphics"/>
 		<graph id="G" edgedefault="directed">
-			<xsl:apply-templates select="rdf:RDF"/>
+			<xsl:apply-templates select="ROOT/rdf:RDF"/>
 		</graph>
 	</graphml>
 </xsl:template>
@@ -40,14 +43,19 @@
 		<data key="d3"><xsl:value-of select="@rdf:about"/></data>
 		<data key="d6">
 			<y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
-				<y:Geometry height="90.0" width="80.0" x="637.0" y="277.0"/>
+        <xsl:variable name="geo" select="key('node-geo',@rdf:about)"/>
+        <xsl:choose>
+          <xsl:when test="exists($geo/graphml:data/y:GenericNode/y:Geometry)"><xsl:copy-of select="$geo/graphml:data/y:GenericNode/y:Geometry"/></xsl:when>
+				  <xsl:otherwise><y:Geometry height="90.0" width="80.0" x="637.0" y="277.0"/></xsl:otherwise>
+        </xsl:choose>
 				<y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
 				<y:BorderStyle color="#000000" type="line" width="1.0"/>
 				<y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#B7C9E3" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="44.25390625" x="17.873046875" y="4.0">
 					<xsl:apply-templates select="." mode="label"/>
 				</y:NodeLabel>
 				<y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="top" visible="true" width="65.541015625" x="2.0" y="30.1328125">
-					<xsl:for-each select="key('blanks',sh:property/@rdf:nodeID)">
+          <!-- Properties -->
+					<xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))">
 						<xsl:if test="position()!=1"><xsl:text>
 </xsl:text></xsl:if><xsl:apply-templates select="." mode="label"/>
 					</xsl:for-each>
@@ -59,8 +67,9 @@
 
 <xsl:template match="rdf:Description" mode="edge">
   <xsl:variable name="subject-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
-  <xsl:for-each select="key('blanks',sh:property/@rdf:nodeID)[exists(key('items',sh:node/@rdf:resource))]">
-    <edge source="{$subject-uri}" target="{sh:node/@rdf:resource}">
+  <!-- Associations -->
+  <xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))[exists(key('items',(sh:node|sh:class)/@rdf:resource))]">
+    <edge source="{$subject-uri}" target="{(sh:node|sh:class)/@rdf:resource}">
 			<data key="d10">
 				<xsl:element name="y:PolyLineEdge">
 					<y:LineStyle color="#000000" type="line" width="1.0"/>
@@ -75,6 +84,18 @@
 					</y:EdgeLabel>
 					<y:BendStyle smoothed="false"/>
 				</xsl:element>
+			</data>
+		</edge>
+  </xsl:for-each>
+  <!-- Generalisations -->
+  <xsl:for-each select="rdfs:subClassOf">
+    <edge source="{$subject-uri}" target="{@rdf:resource}">
+			<data key="d10">
+        <xsl:element name="y:PolyLineEdge">
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="white_delta"/>
+          <y:BendStyle smoothed="false"/>
+        </xsl:element>
 			</data>
 		</edge>
   </xsl:for-each>

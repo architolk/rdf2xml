@@ -21,10 +21,31 @@
     sh:path rdfs:seeAlso;
     sh:name "rdfs:seeAlso";
     sh:node <urn:relklasse-shape>
-  ]
+  ];
+  sh:property [
+    sh:path owl:sameAs;
+    sh:name "owl:sameAs";
+    sh:class <urn:relklasse>
+  ];
 .
-<urn:relklasse-shape> a sh:NodeShape;
+<urn:super> a sh:NodeShape, owl:Class;
+  sh:targetClass <urn:super>;
+  sh:name "urn:super";
+  rdfs:label "Superklasse";
+.
+<urn:relklasse> a sh:NodeShape, owl:Class;
+  rdfs:subClassOf <urn:super>;
   sh:targetClass <urn:relklasse>;
   sh:name "urn:relklasse";
   rdfs:label "Gerelateerde klasse";
+.
+<urn:relklasse-shape> a sh:NodeShape;
+  sh:targetClass <urn:relklasse>;
+  sh:name "urn:relshape";
+  rdfs:label "Gerelateerde shape";
+  sh:property <urn:relproperty-shape>
+.
+<urn:relproperty-shape> a sh:PropertyShape;
+  sh:path rdfs:label;
+  sh:name "rdfs:label";
 .

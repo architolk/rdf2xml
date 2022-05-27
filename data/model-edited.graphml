@@ -1,62 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><ROOT><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:sh="http://www.w3.org/ns/shacl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#"> 
-  <rdf:Description rdf:nodeID="A0">
-    <sh:class rdf:resource="urn:relklasse"/>
-    <sh:name>owl:sameAs</sh:name>
-    <sh:path rdf:resource="http://www.w3.org/2002/07/owl#sameAs"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="urn:relklasse-shape">
-    <sh:property rdf:resource="urn:relproperty-shape"/>
-    <rdfs:label>Gerelateerde shape</rdfs:label>
-    <sh:name>urn:relshape</sh:name>
-    <sh:targetClass rdf:resource="urn:relklasse"/>
-    <rdf:type rdf:resource="http://www.w3.org/ns/shacl#NodeShape"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="urn:mijnklasse">
-    <rdfs:label>mijn klasse</rdfs:label>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="urn:mijnklasse-shape">
-    <sh:property rdf:nodeID="A0"/>
-    <sh:property rdf:nodeID="A1"/>
-    <sh:property rdf:nodeID="A2"/>
-    <rdfs:label>Mijn klasse</rdfs:label>
-    <sh:name>urn:mijnklasse</sh:name>
-    <sh:targetClass rdf:resource="urn:mijnklasse"/>
-    <rdf:type rdf:resource="http://www.w3.org/ns/shacl#NodeShape"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="urn:super">
-    <rdfs:label>Superklasse</rdfs:label>
-    <sh:name>urn:super</sh:name>
-    <sh:targetClass rdf:resource="urn:super"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdf:type rdf:resource="http://www.w3.org/ns/shacl#NodeShape"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="urn:relklasse">
-    <rdfs:label>Gerelateerde klasse</rdfs:label>
-    <sh:name>urn:relklasse</sh:name>
-    <sh:targetClass rdf:resource="urn:relklasse"/>
-    <rdfs:subClassOf rdf:resource="urn:super"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-    <rdf:type rdf:resource="http://www.w3.org/ns/shacl#NodeShape"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A2">
-    <sh:datatype rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <sh:maxCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</sh:maxCount>
-    <sh:minCount rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</sh:minCount>
-    <sh:name>rdfs:label</sh:name>
-    <sh:path rdf:resource="http://www.w3.org/2000/01/rdf-schema#label"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="urn:relproperty-shape">
-    <sh:name>rdfs:label</sh:name>
-    <sh:path rdf:resource="http://www.w3.org/2000/01/rdf-schema#label"/>
-    <rdf:type rdf:resource="http://www.w3.org/ns/shacl#PropertyShape"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A1">
-    <sh:node rdf:resource="urn:relklasse-shape"/>
-    <sh:name>rdfs:seeAlso</sh:name>
-    <sh:path rdf:resource="http://www.w3.org/2000/01/rdf-schema#seeAlso"/>
-  </rdf:Description>
-</rdf:RDF>
+<?xml version="1.0" encoding="UTF-8"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java" xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
   <!--Created by yEd 3.22-->
   <key for="port" id="d0" yfiles.type="portgraphics"/>
@@ -71,7 +13,7 @@
   <key for="edge" id="d9" yfiles.type="edgegraphics"/>
   <graph edgedefault="directed" id="G">
     <node id="n0">
-      <data key="d3" xml:space="preserve">urn:relklasse-shape</data>
+      <data key="d3" xml:space="preserve"><![CDATA[urn:relklasse-shape]]></data>
       <data key="d4"/>
       <data key="d5">
         <y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
@@ -84,7 +26,7 @@
       </data>
     </node>
     <node id="n1">
-      <data key="d3" xml:space="preserve">urn:mijnklasse-shape</data>
+      <data key="d3" xml:space="preserve"><![CDATA[urn:mijnklasse-shape]]></data>
       <data key="d4"/>
       <data key="d5">
         <y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
@@ -99,7 +41,7 @@ rdfs:seeAlso<y:LabelModel><y:ErdAttributesNodeLabelModel/></y:LabelModel><y:Mode
       </data>
     </node>
     <node id="n2">
-      <data key="d3" xml:space="preserve">urn:super</data>
+      <data key="d3" xml:space="preserve"><![CDATA[urn:super]]></data>
       <data key="d4"/>
       <data key="d5">
         <y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
@@ -119,7 +61,7 @@ rdfs:seeAlso<y:LabelModel><y:ErdAttributesNodeLabelModel/></y:LabelModel><y:Mode
       </data>
     </node>
     <node id="n3">
-      <data key="d3" xml:space="preserve">urn:relklasse</data>
+      <data key="d3" xml:space="preserve"><![CDATA[urn:relklasse]]></data>
       <data key="d4"/>
       <data key="d5">
         <y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
@@ -177,4 +119,4 @@ rdfs:seeAlso<y:LabelModel><y:ErdAttributesNodeLabelModel/></y:LabelModel><y:Mode
   <data key="d6">
     <y:Resources/>
   </data>
-</graphml></ROOT>
+</graphml>
