@@ -42,7 +42,12 @@ public class Convert {
         Model model = RDFDataMgr.loadModel(args[0]);
         // A better solution would be to use pipes in seperate threads
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        String preXML = "<ROOT params='" + args[3] + "'>";
+        String preXML;
+        if (args.length >= 4) {
+          preXML = "<ROOT params='" + args[3] + "'>";
+        } else {
+          preXML = "<ROOT>";
+        }
         buffer.write(preXML.getBytes());
         RDFDataMgr.write(buffer, model, RDFFormat.RDFXML_PLAIN);
         if (args.length == 5) {
