@@ -3,7 +3,7 @@
 	<groupId>nl.architolk.rdf2xml</groupId>
 	<artifactId>rdf2xml</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>rdf2xml</name>
   <properties>
       <java.version>1.8</java.version>
