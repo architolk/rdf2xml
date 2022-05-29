@@ -17,7 +17,7 @@
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
-<xsl:template match="*" mode="label">
+<xsl:template match="rdf:Description" mode="label">
   <xsl:variable name="slabel"><xsl:value-of select="replace(@rdf:about|@rdf:nodeID,'^.*(#|/)([^(#|/)]+)$','$2')"/></xsl:variable>
   <xsl:choose>
     <xsl:when test="sh:name!=''"><xsl:value-of select="sh:name"/></xsl:when>
@@ -27,13 +27,27 @@
     <xsl:otherwise><xsl:value-of select="@rdf:about|@rdf:nodeID"/></xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+<xsl:template match="*" mode="label">
+  <xsl:choose>
+    <xsl:when test="exists(key('resources',@rdf:resource|rdf:nodeID))"><xsl:apply-templates select="key('resources',@rdf:resource|rdf:nodeID)" mode="label"/></xsl:when>
+    <xsl:otherwise><xsl:value-of select="replace(@rdf:resource|@rdf:nodeID,'^.*(#|/)([^(#|/)]+)$','$2')"/></xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
 
 <xsl:template match="*" mode="property-label">
+  <xsl:variable name="object-uri"><xsl:value-of select="(sh:node|sh:class)/@rdf:resource"/></xsl:variable>
+  <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
   <xsl:apply-templates select="." mode="label"/>
   <xsl:if test="sh:datatype/@rdf:resource!=''">
     <xsl:text> (</xsl:text>
     <xsl:apply-templates select="sh:datatype" mode="label"/>
-    <xsl:text> )</xsl:text>
+    <xsl:text>)</xsl:text>
+  </xsl:if>
+  <xsl:if test="$object-uri!=''">
+    <xsl:if test="not(exists(key('items',$object-uri))) or ($params='follow' and not(exists($object-geo/graphml:data)))">
+      <xsl:text> &#x2192; </xsl:text>
+      <xsl:apply-templates select="(sh:class|sh:node)" mode="label"/>
+    </xsl:if>
   </xsl:if>
   <xsl:variable name="mincount">
     <xsl:choose>
@@ -43,7 +57,7 @@
   </xsl:variable>
   <xsl:variable name="maxcount">
     <xsl:choose>
-      <xsl:when test="sh:minCount>0"><xsl:value-of select="sh:maxCount"/></xsl:when>
+      <xsl:when test="sh:maxCount>0"><xsl:value-of select="sh:maxCount"/></xsl:when>
       <xsl:otherwise>n</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -87,9 +101,14 @@
   				</y:NodeLabel>
   				<y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="top" visible="true" width="65.541015625" x="2.0" y="30.1328125">
             <!-- Properties -->
+            <!-- We first need a list of properties that we want to process: we don't want properties that will be edges -->
   					<xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))">
-  						<xsl:if test="position()!=1"><xsl:text>
-</xsl:text></xsl:if><xsl:apply-templates select="." mode="property-label"/>
+              <xsl:variable name="object-uri"><xsl:value-of select="(sh:node|sh:class)/@rdf:resource"/></xsl:variable>
+              <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
+              <xsl:if test="not(exists(key('items',$object-uri))) or ($params='follow' and not(exists($object-geo/graphml:data)))">
+                <xsl:apply-templates select="." mode="property-label"/><xsl:text>
+</xsl:text>
+              </xsl:if>
   					</xsl:for-each>
   				<y:LabelModel><y:ErdAttributesNodeLabelModel/></y:LabelModel><y:ModelParameter><y:ErdAttributesNodeLabelModelParameter/></y:ModelParameter></y:NodeLabel>
   			</y:GenericNode>
