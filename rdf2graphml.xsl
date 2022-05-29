@@ -4,6 +4,7 @@
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
   xmlns:sh="http://www.w3.org/ns/shacl#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
   xmlns:graphml="http://graphml.graphdrawing.org/xmlns"
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
@@ -17,11 +18,36 @@
 <xsl:variable name="params" select="/ROOT/@params"/>
 
 <xsl:template match="*" mode="label">
+  <xsl:variable name="slabel"><xsl:value-of select="replace(@rdf:about|@rdf:nodeID,'^.*(#|/)([^(#|/)]+)$','$2')"/></xsl:variable>
   <xsl:choose>
-    <xsl:when test="rdfs:label!=''"><xsl:value-of select="rdfs:label"/></xsl:when>
     <xsl:when test="sh:name!=''"><xsl:value-of select="sh:name"/></xsl:when>
+    <xsl:when test="skos:notation!=''"><xsl:value-of select="skos:notation"/></xsl:when>
+    <xsl:when test="rdfs:label!=''"><xsl:value-of select="rdfs:label"/></xsl:when>
+    <xsl:when test="$slabel!=''"><xsl:value-of select="$slabel"/></xsl:when>
     <xsl:otherwise><xsl:value-of select="@rdf:about|@rdf:nodeID"/></xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="*" mode="property-label">
+  <xsl:apply-templates select="." mode="label"/>
+  <xsl:if test="sh:datatype/@rdf:resource!=''">
+    <xsl:text> (</xsl:text>
+    <xsl:apply-templates select="sh:datatype" mode="label"/>
+    <xsl:text> )</xsl:text>
+  </xsl:if>
+  <xsl:variable name="mincount">
+    <xsl:choose>
+      <xsl:when test="sh:minCount>0"><xsl:value-of select="sh:minCount"/></xsl:when>
+      <xsl:otherwise>0</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="maxcount">
+    <xsl:choose>
+      <xsl:when test="sh:minCount>0"><xsl:value-of select="sh:maxCount"/></xsl:when>
+      <xsl:otherwise>n</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:text> [</xsl:text><xsl:value-of select="$mincount"/><xsl:text>,</xsl:text><xsl:value-of select="$maxcount"/><xsl:text>]</xsl:text>
 </xsl:template>
 
 <xsl:template match="/">
@@ -63,7 +89,7 @@
             <!-- Properties -->
   					<xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))">
   						<xsl:if test="position()!=1"><xsl:text>
-</xsl:text></xsl:if><xsl:apply-templates select="." mode="label"/>
+</xsl:text></xsl:if><xsl:apply-templates select="." mode="property-label"/>
   					</xsl:for-each>
   				<y:LabelModel><y:ErdAttributesNodeLabelModel/></y:LabelModel><y:ModelParameter><y:ErdAttributesNodeLabelModelParameter/></y:ModelParameter></y:NodeLabel>
   			</y:GenericNode>
@@ -88,20 +114,25 @@
           <data key="d7"><xsl:value-of select="$statement-uri"/></data>
           <data key="d8"><xsl:value-of select="$property-uri"/></data>
     			<data key="d10">
-    				<xsl:element name="y:PolyLineEdge">
+    				<y:PolyLineEdge>
               <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
     					<y:LineStyle color="#000000" type="line" width="1.0"/>
     					<y:Arrows source="none" target="standard"/>
-    					<y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true"><xsl:apply-templates select="." mode="label"/><y:LabelModel>
-    							<y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
-    						</y:LabelModel>
-    						<y:ModelParameter>
-    							<y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/>
-    						</y:ModelParameter>
+    					<y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
+                  <xsl:for-each select="$statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel[1]">
+                    <xsl:attribute name="x" select="@x"/>
+                    <xsl:attribute name="y" select="@y"/>
+                  </xsl:for-each>
+                  <xsl:apply-templates select="." mode="property-label"/><y:LabelModel>
+                  <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
+                <xsl:choose>
+                  <xsl:when test="exists($statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel/y:ModelParameter)"><xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel/y:ModelParameter"/></xsl:when>
+                  <xsl:otherwise><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter></xsl:otherwise>
+                </xsl:choose>
     						<y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
     					</y:EdgeLabel>
     					<y:BendStyle smoothed="false"/>
-    				</xsl:element>
+    				</y:PolyLineEdge>
     			</data>
     		</edge>
       </xsl:if>
@@ -118,12 +149,12 @@
           <data key="d7"><xsl:value-of select="$statement-uri"/></data>
           <data key="d8"><xsl:value-of select="$property-uri"/></data>
     			<data key="d10">
-            <xsl:element name="y:PolyLineEdge">
+            <y:PolyLineEdge>
               <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
               <y:LineStyle color="#000000" type="line" width="1.0"/>
               <y:Arrows source="none" target="white_delta"/>
               <y:BendStyle smoothed="false"/>
-            </xsl:element>
+            </y:PolyLineEdge>
     			</data>
     		</edge>
       </xsl:if>
