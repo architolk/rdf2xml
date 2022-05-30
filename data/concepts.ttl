@@ -1,0 +1,16 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+
+<urn:fiets> a skos:Concept;
+  skos:prefLabel "Fiets";
+  skos:definition "Een fiets is een voertuig met twee wielen, aangedreven door menskracht";
+  skos:broader <urn:voertuig>;
+  skos:related <urn:wiel>;
+.
+<urn:voertuig> a skos:Concept;
+  skos:prefLabel "Voertuig";
+  skos:definition "Een voertuig is een beweegbaar goed, bedoeld om mensen en/of goederen mee te vervoeren";
+.
+<urn:wiel> a skos:Concept;
+  skos:prefLabel "Wiel";
+  skos:definition "Een wiel is een ronddraaiend goed";
+.

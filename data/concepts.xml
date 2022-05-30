@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><ROOT><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#"> 
+  <rdf:Description rdf:about="urn:fiets">
+    <skos:related rdf:resource="urn:wiel"/>
+    <skos:broader rdf:resource="urn:voertuig"/>
+    <skos:definition>Een fiets is een voertuig met twee wielen, aangedreven door menskracht</skos:definition>
+    <skos:prefLabel>Fiets</skos:prefLabel>
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:voertuig">
+    <skos:definition>Een voertuig is een beweegbaar goed, bedoeld om mensen en/of goederen mee te vervoeren</skos:definition>
+    <skos:prefLabel>Voertuig</skos:prefLabel>
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:wiel">
+    <skos:definition>Een wiel is een ronddraaiend goed</skos:definition>
+    <skos:prefLabel>Wiel</skos:prefLabel>
+    <rdf:type rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+  </rdf:Description>
+</rdf:RDF>
+</ROOT>
