@@ -157,7 +157,7 @@
       </xsl:if>
     </xsl:for-each>
     <!-- Generalisations -->
-    <xsl:for-each select="rdfs:subClassOf">
+    <xsl:for-each select="rdfs:subClassOf[exists(key('items',@rdf:resource))]">
       <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
       <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
       <xsl:variable name="property-uri">rdfs:subClassOf</xsl:variable>
