@@ -11,6 +11,8 @@
 
 <xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about"/>
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
+<xsl:key name="node-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
+<xsl:key name="edge-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:edge" use="graphml:data[@key='d7']"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
@@ -108,7 +110,11 @@
   		<data key="d3"><xsl:value-of select="@rdf:about"/></data>
   		<data key="d6">
         <y:SVGNode>
-          <y:Geometry height="90.0" width="80.0" x="637.0" y="277.0"/>
+          <xsl:variable name="geo" select="key('node-geo',@rdf:about)"/>
+          <xsl:choose>
+            <xsl:when test="exists($geo/graphml:data/y:GenericNode/y:Geometry)"><xsl:copy-of select="$geo/graphml:data/y:GenericNode/y:Geometry"/></xsl:when>
+  				  <xsl:otherwise><y:Geometry height="90.0" width="80.0" x="637.0" y="277.0"/></xsl:otherwise>
+          </xsl:choose>
   				<y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
   				<y:BorderStyle color="#000000" type="line" width="1.0"/>
   				<y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#B7C9E3" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="44.25390625" x="17.873046875" y="4.0">
