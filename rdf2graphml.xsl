@@ -83,13 +83,13 @@
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="node">
-  <xsl:variable name="geo" select="key('node-geo',@rdf:about)"/>
+  <xsl:variable name="subject-uri" select="@rdf:about"/>
+  <xsl:variable name="geo" select="key('node-geo',$subject-uri)"/>
   <xsl:if test="not($params='follow') or exists($geo/graphml:data)">
     <node id="{@rdf:about}">
-  		<data key="d3"><xsl:value-of select="@rdf:about"/></data>
+  		<data key="d3"><xsl:value-of select="$subject-uri"/></data>
   		<data key="d6">
   			<y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
-          <xsl:variable name="geo" select="key('node-geo',@rdf:about)"/>
           <xsl:choose>
             <xsl:when test="exists($geo/graphml:data/y:GenericNode/y:Geometry)"><xsl:copy-of select="$geo/graphml:data/y:GenericNode/y:Geometry"/></xsl:when>
   				  <xsl:otherwise><y:Geometry height="90.0" width="80.0" x="637.0" y="277.0"/></xsl:otherwise>
@@ -100,8 +100,15 @@
   					<xsl:apply-templates select="." mode="label"/>
   				</y:NodeLabel>
   				<y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="top" visible="true" width="65.541015625" x="2.0" y="30.1328125">
+            <!-- Values -->
+            <xsl:if test="rdfs:subClassOf/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept'">
+              <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource=$subject-uri]">
+                <xsl:if test="position()!=1"><xsl:text>
+</xsl:text></xsl:if>
+                <xsl:text>- </xsl:text><xsl:apply-templates select="." mode="label"/>
+              </xsl:for-each>
+            </xsl:if>
             <!-- Properties -->
-            <!-- We first need a list of properties that we want to process: we don't want properties that will be edges -->
   					<xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))">
               <xsl:variable name="object-uri"><xsl:value-of select="(sh:node|sh:class)/@rdf:resource"/></xsl:variable>
               <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
@@ -136,7 +143,13 @@
     				<y:PolyLineEdge>
               <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
     					<y:LineStyle color="#000000" type="line" width="1.0"/>
-    					<y:Arrows source="none" target="standard"/>
+              <xsl:variable name="sourcearrow">
+                  <xsl:choose>
+                    <xsl:when test="sh:nodeKind/@rdf:resource='http://www.w3.org/ns/shacl#BlankNode'">diamond</xsl:when>
+                    <xsl:otherwise>none</xsl:otherwise>
+                  </xsl:choose>
+              </xsl:variable>
+    					<y:Arrows source="{$sourcearrow}" target="standard"/>
     					<y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
                   <xsl:for-each select="$statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel[1]">
                     <xsl:attribute name="x" select="@x"/>
