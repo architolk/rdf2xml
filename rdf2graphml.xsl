@@ -96,7 +96,13 @@
           </xsl:choose>
   				<y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
   				<y:BorderStyle color="#000000" type="line" width="1.0"/>
-  				<y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#B7C9E3" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="44.25390625" x="17.873046875" y="4.0">
+          <xsl:variable name="backgroundColor">
+            <xsl:choose>
+              <xsl:when test="exists($geo/graphml:data/y:GenericNode/y:NodeLabel/@backgroundColor)"><xsl:value-of select="$geo/graphml:data/y:GenericNode/y:NodeLabel/@backgroundColor"/></xsl:when>
+              <xsl:otherwise>#B7C9E3</xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+  				<y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="{$backgroundColor}" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="44.25390625" x="17.873046875" y="4.0">
   					<xsl:apply-templates select="." mode="label"/>
   				</y:NodeLabel>
   				<y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="top" visible="true" width="65.541015625" x="2.0" y="30.1328125">
@@ -132,7 +138,7 @@
     <xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))[exists(key('items',(sh:node|sh:class)/@rdf:resource))]">
       <xsl:variable name="object-uri"><xsl:value-of select="(sh:node|sh:class)/@rdf:resource"/></xsl:variable>
       <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
-      <xsl:variable name="property-uri"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></xsl:variable>
+      <xsl:variable name="property-uri"><xsl:value-of select="@rdf:about|sh:path/@rdf:resource"/></xsl:variable>
       <xsl:variable name="statement-uri">urn:md5:<xsl:value-of select="concat($subject-uri,$property-uri,$object-uri)"/></xsl:variable>
       <xsl:variable name="statement-geo" select="key('edge-geo',$statement-uri)"/>
       <xsl:if test="not($params='follow') or exists($object-geo/graphml:data)">
