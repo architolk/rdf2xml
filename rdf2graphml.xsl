@@ -148,7 +148,10 @@
     			<data key="d10">
     				<y:PolyLineEdge>
               <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
-    					<y:LineStyle color="#000000" type="line" width="1.0"/>
+              <xsl:choose>
+                <xsl:when test="exists($statement-geo/graphml:data/y:PolyLineEdge/y:LineStyle)"><xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:LineStyle"/></xsl:when>
+                <xsl:otherwise><y:LineStyle color="#000000" type="line" width="1.0"/></xsl:otherwise>
+              </xsl:choose>
               <xsl:variable name="sourcearrow">
                   <xsl:choose>
                     <xsl:when test="sh:nodeKind/@rdf:resource='http://www.w3.org/ns/shacl#BlankNode'">diamond</xsl:when>
