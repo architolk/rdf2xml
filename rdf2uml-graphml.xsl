@@ -78,7 +78,7 @@
 </xsl:template>
 
 <xsl:template match="rdf:RDF">
-  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="node"/>
+  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']|key('items',rdf:Description/rdfs:subClassOf/@rdf:resource)" mode="node"/>
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="edge"/>
 </xsl:template>
 
