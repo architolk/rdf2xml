@@ -9,7 +9,7 @@
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
 
-<xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about"/>
+<xsl:key name="nodeshapes" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" use="@rdf:about"/>
 <xsl:key name="blanks" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
 <xsl:key name="node-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
@@ -44,7 +44,7 @@
     <xsl:text>)</xsl:text>
   </xsl:if>
   <xsl:if test="$object-uri!=''">
-    <xsl:if test="not(exists(key('items',$object-uri))) or ($params='follow' and not(exists($object-geo/graphml:data)))">
+    <xsl:if test="not(exists(key('nodeshapes',$object-uri))) or ($params='follow' and not(exists($object-geo/graphml:data)))">
       <xsl:text> &#x2192; </xsl:text>
       <xsl:apply-templates select="(sh:class|sh:node)" mode="label"/>
     </xsl:if>
@@ -78,7 +78,7 @@
 </xsl:template>
 
 <xsl:template match="rdf:RDF">
-  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']|key('items',rdf:Description/rdfs:subClassOf/@rdf:resource)" mode="node"/>
+  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']|key('resources',rdf:Description/rdfs:subClassOf/@rdf:resource)" mode="node"/>
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="edge"/>
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="logic"/>
 </xsl:template>
@@ -120,7 +120,7 @@
               <xsl:variable name="object-uri"><xsl:value-of select="(sh:node|sh:class)/@rdf:resource"/></xsl:variable>
               <xsl:variable name="logic-uri"><xsl:value-of select="(key('blanks',sh:node/@rdf:nodeID)/(sh:xone|sh:and|sh:or|sh:not)|key('blanks',key('blanks',sh:node/@rdf:nodeID)/sh:property/@rdf:nodeID)[sh:path/@rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#type']/sh:in)/local-name()"/></xsl:variable>
               <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
-              <xsl:if test="not(exists(key('items',$object-uri)) or $logic-uri!='') or ($params='follow' and not(exists($object-geo/graphml:data)))">
+              <xsl:if test="not(exists(key('nodeshapes',$object-uri)) or $logic-uri!='') or ($params='follow' and not(exists($object-geo/graphml:data)))">
                 <xsl:apply-templates select="." mode="property-label"/><xsl:text>
 </xsl:text>
               </xsl:if>
@@ -204,7 +204,7 @@
 
 <xsl:template match="rdf:Description" mode="logic-item">
   <xsl:param name="subject-uri"/>
-  <xsl:for-each select="rdf:first[exists(key('items',@rdf:resource))]">
+  <xsl:for-each select="rdf:first[exists(key('resources',@rdf:resource))]">
     <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
     <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
     <xsl:variable name="property-uri">LOGIC</xsl:variable>
@@ -235,7 +235,7 @@
   <xsl:variable name="subject-geo" select="key('node-geo',$subject-uri)"/>
   <xsl:if test="not($params='follow') or exists($subject-geo/graphml:data)">
     <!-- Associations -->
-    <xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))[exists(key('items',(sh:node|sh:class)/@rdf:resource))]">
+    <xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))[exists(key('nodeshapes',(sh:node|sh:class)/@rdf:resource))]">
       <xsl:variable name="object-uri"><xsl:value-of select="(sh:node|sh:class)/@rdf:resource"/></xsl:variable>
       <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
       <xsl:variable name="property-uri"><xsl:value-of select="@rdf:about|sh:path/@rdf:resource"/></xsl:variable>
@@ -279,7 +279,7 @@
       </xsl:if>
     </xsl:for-each>
     <!-- Generalisations -->
-    <xsl:for-each select="rdfs:subClassOf[exists(key('items',@rdf:resource))]">
+    <xsl:for-each select="rdfs:subClassOf[exists(key('resources',@rdf:resource))]">
       <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
       <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
       <xsl:variable name="property-uri">rdfs:subClassOf</xsl:variable>
