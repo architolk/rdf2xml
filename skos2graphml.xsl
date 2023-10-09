@@ -84,7 +84,8 @@
 
 <xsl:template match="rdf:Description" mode="edge">
   <xsl:variable name="subject-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
-  <xsl:for-each select="*[exists(key('items',@rdf:resource))]">
+	<!--<xsl:for-each select="*[exists(key('items',@rdf:resource)) and local-name()!='inScheme' and local-name()!='grondslag']">-->
+  <xsl:for-each select="*[exists(key('items',@rdf:resource)[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept'])]">
     <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
     <edge source="{$subject-uri}" target="{$object-uri}">
       <data key="d10">
