@@ -9,6 +9,8 @@
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
 
+<xsl:output method="xml" indent="yes"/>
+
 <xsl:key name="nodeshapes" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" use="@rdf:about|sh:targetClass/@rdf:resource"/>
 <xsl:key name="blanks" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
@@ -81,7 +83,7 @@
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="node"/>
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="edge"/>
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="logic"/>
-  <xsl:apply-templates select="key('resources',rdf:Description/rdfs:subClassOf/@rdf:resource)" mode="gen"/>
+  <xsl:apply-templates select="rdf:Description[exists(rdfs:subClassOf/@rdf:resource)]" mode="gen"/>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="node">
