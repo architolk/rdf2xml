@@ -49,6 +49,12 @@
       <xsl:value-of select="rdfs:label"/>
       <xsl:text> [[</xsl:text><xsl:value-of select="dct:identifier"/><xsl:text>]]</xsl:text>
     </xsl:when>
+    <xsl:when test="key('items',dct:isPartOf/@rdf:resource)/dct:identifier!=''">
+      <xsl:variable name="title"><xsl:value-of select="dct:title"/></xsl:variable>
+      <xsl:value-of select="dct:title"/>
+      <xsl:if test="$title=''"><xsl:value-of select="rdfs:label"/></xsl:if>
+      <xsl:text> [[</xsl:text><xsl:value-of select="key('items',dct:isPartOf/@rdf:resource)/dct:identifier"/><xsl:text>]]</xsl:text>
+    </xsl:when>
     <xsl:otherwise>
       <xsl:text>[</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>]</xsl:text>
       <xsl:text>(</xsl:text><xsl:value-of select="dct:bibliographicCitation/@rdf:resource"/><xsl:text>)</xsl:text>
