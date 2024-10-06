@@ -87,21 +87,23 @@
 	<!--<xsl:for-each select="*[exists(key('items',@rdf:resource)) and local-name()!='inScheme' and local-name()!='grondslag']">-->
   <xsl:for-each select="*[exists(key('items',@rdf:resource)[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept'])]">
     <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
-    <edge source="{$subject-uri}" target="{$object-uri}">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
-              <xsl:value-of select="local-name()"/><y:LabelModel>
-              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
-            <y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter>
-            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-          </y:EdgeLabel>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
+    <xsl:if test="not($params='taxonomy') or local-name()='broader' or local-name()='narrower' or local-name()='broaderGeneric' or local-name()='broaderPartitive' or local-name()='narrowerPartitive' or local-name()='narrowerGeneric'">
+      <edge source="{$subject-uri}" target="{$object-uri}">
+        <data key="d10">
+          <y:PolyLineEdge>
+            <y:LineStyle color="#000000" type="line" width="1.0"/>
+            <y:Arrows source="none" target="standard"/>
+            <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
+                <xsl:value-of select="local-name()"/><y:LabelModel>
+                <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
+              <y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter>
+              <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+            </y:EdgeLabel>
+            <y:BendStyle smoothed="false"/>
+          </y:PolyLineEdge>
+        </data>
+      </edge>
+    </xsl:if>
   </xsl:for-each>
 </xsl:template>
 
