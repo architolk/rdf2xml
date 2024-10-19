@@ -12,13 +12,16 @@
 
 <xsl:output method="text"/>
 
+<xsl:variable name="doublequote">"</xsl:variable>
+<xsl:variable name="doublequote-escape">\\"</xsl:variable>
+
 <xsl:template match="rdf:Description" mode="reference">
   <xsl:text>  "</xsl:text>
-  <xsl:value-of select="dct:identifier"/>
+  <xsl:value-of select="replace(dct:identifier,'[^a-zA-Z0-9_-]','')"/>
   <xsl:text>": {&#xa;</xsl:text>
   <xsl:if test="rdfs:label!=''">
     <xsl:text>    title: "</xsl:text>
-    <xsl:value-of select="rdfs:label"/>
+    <xsl:value-of select="replace(replace(rdfs:label,'\n',''),$doublequote,$doublequote-escape)"/>
     <xsl:text>",&#xa;</xsl:text>
   </xsl:if>
   <xsl:if test="dct:bibliographicCitation/@rdf:resource!=''">

@@ -7,18 +7,66 @@
   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
   xmlns:skosthes="http://purl.org/iso25964/skos-thes#"
   xmlns:dct="http://purl.org/dc/terms/"
+  xmlns:skosxl="http://www.w3.org/2008/05/skos-xl#"
 >
 
 <xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about"/>
 <xsl:key name="bnodes" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
+<xsl:key name="terms" match="/ROOT/rdf:RDF/rdf:Description[skosxl:literalForm!='']" use="lower-case(skosxl:literalForm)"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
 <xsl:output method="text"/>
 
+<xsl:variable name="terms">
+  <xsl:for-each select="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']">
+    <xsl:variable name="term"><xsl:apply-templates select="rdfs:label" mode="anchor"/></xsl:variable>
+    <term term="{$term}">
+      <literal><xsl:value-of select="$term"/></literal>
+      <xsl:for-each select="key('items',key('terms',lower-case(rdfs:label))/skosxl:hiddenLabel/@rdf:resource)">
+        <xsl:variable name="literal"><xsl:apply-templates select="skosxl:literalForm" mode="anchor"/></xsl:variable>
+        <xsl:if test="$literal!=$term">
+          <literal><xsl:value-of select="$literal"/></literal>
+        </xsl:if>
+      </xsl:for-each>
+    </term>
+  </xsl:for-each>
+</xsl:variable>
+
+<xsl:template match="*" mode="liblink">
+  <xsl:param name="informal"/>
+  <xsl:text> [[</xsl:text>
+  <xsl:value-of select="$informal"/>
+  <xsl:value-of select="replace(.,'[^a-zA-Z0-9_-]','')"/>
+  <xsl:text>]]</xsl:text>
+</xsl:template>
+
+<xsl:template match="*|@*|text()" mode="anchor">
+  <xsl:value-of select="replace(replace(lower-case(.),':',''),' ','-')"/>
+</xsl:template>
+
 <xsl:template match="rdf:Description" mode="link">
   <xsl:text>[</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>]</xsl:text>
-  <xsl:text>(#</xsl:text><xsl:value-of select="replace(lower-case(rdfs:label),' ','-')"/><xsl:text>)</xsl:text>
+  <xsl:text>(#</xsl:text><xsl:apply-templates select="rdfs:label" mode="anchor"/><xsl:text>)</xsl:text>
+</xsl:template>
+
+<xsl:template match="*" mode="definition">
+  <xsl:for-each select="tokenize(.,'\[')">
+    <xsl:variable name="token"><xsl:value-of select="substring-before(.,']')"/></xsl:variable>
+    <xsl:variable name="anchor"><xsl:apply-templates select="$token" mode="anchor"/></xsl:variable>
+    <xsl:choose>
+      <xsl:when test="position()=1"><xsl:value-of select="."/></xsl:when>
+      <xsl:when test="$token!=''">
+        <xsl:text>[</xsl:text>
+        <xsl:value-of select="$token"/>
+        <xsl:text>](</xsl:text>
+        <xsl:if test="exists($terms/term[literal=$anchor])"><xsl:text>#</xsl:text><xsl:value-of select="$terms/term[literal=$anchor][1]/@term"/></xsl:if>
+        <xsl:text>)</xsl:text>
+        <xsl:value-of select="substring-after(.,']')"/>
+    </xsl:when>
+      <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:for-each>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="scheme-content">
@@ -47,13 +95,13 @@
   <xsl:choose>
     <xsl:when test="dct:identifier!=''">
       <xsl:value-of select="rdfs:label"/>
-      <xsl:text> [[</xsl:text><xsl:value-of select="dct:identifier"/><xsl:text>]]</xsl:text>
+      <xsl:apply-templates select="dct:identifier" mode="liblink"/>
     </xsl:when>
     <xsl:when test="key('items',dct:isPartOf/@rdf:resource)/dct:identifier!=''">
       <xsl:variable name="title"><xsl:value-of select="dct:title"/></xsl:variable>
       <xsl:value-of select="dct:title"/>
       <xsl:if test="$title=''"><xsl:value-of select="rdfs:label"/></xsl:if>
-      <xsl:text> [[</xsl:text><xsl:value-of select="key('items',dct:isPartOf/@rdf:resource)/dct:identifier"/><xsl:text>]]</xsl:text>
+      <xsl:apply-templates select="key('items',dct:isPartOf/@rdf:resource)/dct:identifier" mode="liblink"/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:text>[</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>]</xsl:text>
@@ -64,7 +112,7 @@
 <xsl:template match="rdf:Description" mode="source">
   <xsl:choose>
     <xsl:when test="dct:identifier!=''">
-      <xsl:text> [[!</xsl:text><xsl:value-of select="dct:identifier"/><xsl:text>]]</xsl:text>
+      <xsl:apply-templates select="dct:identifier" mode="liblink"><xsl:with-param name="informal">!</xsl:with-param></xsl:apply-templates>
     </xsl:when>
     <xsl:otherwise>
       <xsl:text>[</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>]</xsl:text>
@@ -88,7 +136,7 @@
   </xsl:if>
   <xsl:if test="skos:definition!=''">
     <xsl:text>&gt; </xsl:text>
-    <xsl:value-of select="skos:definition"/>
+    <xsl:apply-templates select="skos:definition" mode="definition"/>
     <xsl:text>&#xa;&#xa;</xsl:text>
   </xsl:if>
   <xsl:if test="skos:scopeNote!=''">
