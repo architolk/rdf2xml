@@ -1,0 +1,34 @@
+@prefix fbm: <http://bp4mc2.org/def/fbm#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+<urn:persoon> a fbm:Objecttype;
+  rdfs:label "persoon";
+  fbm:role [
+    fbm:playedBy <urn:pname>;
+  ]
+.
+
+<urn:pname> a fbm:Valuetype;
+  rdfs:label "person's name";
+.
+
+<urn:organisation> a fbm:Objecttype;
+  rdfs:label "organisation";
+  fbm:role [
+    fbm:playedBy <urn:oname>;
+  ]
+.
+
+<urn:oname> a fbm:Valuetype;
+  rdfs:label "organisation's name";
+.
+
+<urn:employment> a fbm:Facttype;
+  rdfs:label "employment";
+  fbm:role [
+    fbm:playedBy <urn:persoon>;
+  ];
+  fbm:role [
+    fbm:playedBy <urn:organisation>
+  ]
+.
