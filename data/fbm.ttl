@@ -25,10 +25,22 @@
 
 <urn:employment> a fbm:Facttype;
   rdfs:label "employment";
-  fbm:role [
-    fbm:playedBy <urn:persoon>;
+  fbm:role <urn:employee>;
+  fbm:role <urn:employer>;
+  fbm:constraint [
+    a fbm:MandatoryConstraint;
+    fbm:restricts <urn:employer>
   ];
-  fbm:role [
-    fbm:playedBy <urn:organisation>
-  ]
+  fbm:constraint [
+    a fbm:UniquenessConstraint;
+    fbm:restricts <urn:employer>, <urn:employee>
+  ];
+.
+<urn:employer> a fbm:Role;
+  rdfs:label "employer";
+  fbm:playedBy <urn:organisation>
+.
+<urn:employee> a fbm:Role;
+  rdfs:label "employee";
+  fbm:playedBy <urn:persoon>
 .

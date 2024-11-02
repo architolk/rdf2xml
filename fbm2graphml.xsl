@@ -10,7 +10,8 @@
 >
 
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
-<xsl:key name="roleowner" match="/ROOT/rdf:RDF/rdf:Description" use="fbm:role/(@rdf:about|@rdf:nodeID)"/>
+<xsl:key name="mandatoryrole" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#MandatoryConstraint']" use="fbm:restricts/(@rdf:resource|@rdf:nodeID)"/>
+<xsl:key name="uniquerole" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#UniquenessConstraint']" use="fbm:restricts/(@rdf:resource|@rdf:nodeID)"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
@@ -100,18 +101,32 @@
   		</data>
       <graph edgedefault="directed" id="{@rdf:about}:">
         <xsl:for-each select="key('resources',fbm:role/(@rdf:nodeID|@rdf:resource))">
+          <xsl:variable name="roleposition"><xsl:value-of select="position()"/></xsl:variable>
+          <xsl:variable name="xpos"><xsl:value-of select="570+position()*30"/></xsl:variable>
           <node id="{@rdf:about|@rdf:nodeID}">
             <data key="d3"/>
             <data key="d6">
               <y:ShapeNode>
-                <y:Geometry height="30" width="30" x="{570+position()*30}" y="455"/>
+                <y:Geometry height="30" width="30" x="{$xpos}" y="455"/>
                 <y:Fill color="#FFCC00" transparent="false"/>
                 <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:value-of select="position()"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:value-of select="$roleposition"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
                 <y:Shape type="rectangle"/>
               </y:ShapeNode>
             </data>
           </node>
+          <xsl:for-each select="key('uniquerole',@rdf:about|@rdf:nodeID)"><xsl:sort select="@rdf:about|@rdf:nodeID"/>
+            <node id="{@rdf:about|@rdf:nodeID}-{$roleposition}">
+              <data key="d6">
+                <y:ShapeNode>
+                  <y:Geometry height="2" width="30" x="{$xpos}" y="{455-position()*6}"/>
+                  <y:Fill color="#000000" transparent="false"/>
+                  <y:BorderStyle hascolor="false" type="line" width="1.0"/>
+                  <y:Shape type="rectangle"/>
+                </y:ShapeNode>
+              </data>
+            </node>
+          </xsl:for-each>
         </xsl:for-each>
       </graph>
   	</node>
@@ -133,12 +148,18 @@
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="edge">
+  <xsl:variable name="targetarrow">
+    <xsl:choose>
+      <xsl:when test="exists(key('mandatoryrole',@rdf:about|@rdf:nonde))">circle</xsl:when>
+      <xsl:otherwise>none</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
   <edge id="{@rdf:about|@rdf:nodeID}" source="{@rdf:about|@rdf:nodeID}" target="{fbm:playedBy/@rdf:resource}">
     <data key="d10">
       <y:PolyLineEdge>
         <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
         <y:LineStyle color="#000000" type="line" width="1.0"/>
-        <y:Arrows source="none" target="none"/>
+        <y:Arrows source="none" target="{$targetarrow}"/>
         <y:BendStyle smoothed="false"/>
       </y:PolyLineEdge>
     </data>
