@@ -12,6 +12,8 @@
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
 <xsl:key name="mandatoryrole" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#MandatoryConstraint']" use="fbm:restricts/(@rdf:resource|@rdf:nodeID)"/>
 <xsl:key name="uniquerole" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#UniquenessConstraint']" use="fbm:restricts/(@rdf:resource|@rdf:nodeID)"/>
+<xsl:key name="predicatesubject" match="/ROOT/rdf:RDF/rdf:Description[fbm:atPosition=1]" use="fbm:role/(@rdf:resource|@rdf:nodeID)"/>
+<xsl:key name="predicate" match="/ROOT/rdf:RDF/rdf:Description" use="fbm:ordersRole/(@rdf:resource|@rdf:nodeID)"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
@@ -110,8 +112,17 @@
                 <y:Geometry height="30" width="30" x="{$xpos}" y="455"/>
                 <y:Fill color="#FFCC00" transparent="false"/>
                 <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:value-of select="$roleposition"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:value-of select="rdfs:label"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
                 <y:Shape type="rectangle"/>
+                <xsl:variable name="predicate">
+                  <xsl:for-each select="key('resources',key('predicate',key('predicatesubject',(@rdf:about|@rdf:nodeID))/(@rdf:about|@rdf:nodeID))/fbm:reading/(@rdf:resource|@rdf:nodeID))">
+                    <xsl:if test="position()!=1"><xsl:text>&#xa;</xsl:text></xsl:if>
+                    <xsl:value-of select="fbm:text"/>
+                  </xsl:for-each>
+                </xsl:variable>
+                <xsl:if test="$predicate!=''">
+                  <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="sides" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="83.91015625" x="-7.8818359375" xml:space="preserve" y="34.0"><xsl:value-of select="$predicate"/></y:NodeLabel>
+                </xsl:if>
               </y:ShapeNode>
             </data>
           </node>
