@@ -10,6 +10,7 @@
 
 <urn:pname> a fbm:Valuetype;
   rdfs:label "person's name";
+  fbm:subtypeOf <urn:name>;
 .
 
 <urn:organisation> a fbm:Objecttype;
@@ -21,6 +22,11 @@
 
 <urn:oname> a fbm:Valuetype;
   rdfs:label "organisation's name";
+  fbm:subtypeOf <urn:name>;
+.
+
+<urn:name> a fbm:Valuetype;
+  rdfs:label "name";
 .
 
 <urn:employment> a fbm:Facttype;

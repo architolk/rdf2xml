@@ -51,6 +51,7 @@
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#Facttype']" mode="group"/>
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#Valuetype']" mode="node"/>
   <xsl:apply-templates select="key('resources',rdf:Description/fbm:role/(@rdf:nodeID|@rdf:resource))" mode="edge"/>
+  <xsl:apply-templates select="rdf:Description/fbm:subtypeOf" mode="subtype"/>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="predicatereading">
@@ -202,6 +203,19 @@
         <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
         <y:LineStyle color="#000000" type="line" width="1.0"/>
         <y:Arrows source="none" target="{$targetarrow}"/>
+        <y:BendStyle smoothed="false"/>
+      </y:PolyLineEdge>
+    </data>
+  </edge>
+</xsl:template>
+
+<xsl:template match="fbm:subtypeOf" mode="subtype">
+  <edge id="{../@rdf:about|@rdf:nodeID}.subtype" source="{../@rdf:about|@rdf:nodeID}" target="{@rdf:resource|@rdf:nodeID}">
+    <data key="d10">
+      <y:PolyLineEdge>
+        <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+        <y:LineStyle color="#000000" type="line" width="1.0"/>
+        <y:Arrows source="none" target="white_delta"/>
         <y:BendStyle smoothed="false"/>
       </y:PolyLineEdge>
     </data>
