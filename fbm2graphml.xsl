@@ -184,6 +184,15 @@
         <y:Fill color="#F5F5F5" transparent="false"/>
         <y:BorderStyle color="#000000" raised="false" type="dashed" width="1.0"/>
         <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:apply-templates select="." mode="label"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+        <xsl:variable name="values">
+          <xsl:for-each select="key('resources',fbm:constraint/(@rdf:resource|@rdf:nodeID))[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#ValueConstraint']/fbm:allowValue">
+            <xsl:if test="position()!=1"><xsl:text>,</xsl:text></xsl:if>
+            <xsl:value-of select="."/>
+          </xsl:for-each>
+        </xsl:variable>
+        <xsl:if test="$values!=''">
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="corners" modelPosition="ne" textColor="#000000" verticalTextPosition="bottom" visible="true" width="63.548828125" x="34.0" xml:space="preserve" y="-18.1328125"><xsl:text>{</xsl:text><xsl:value-of select="$values"/><xsl:text>}</xsl:text></y:NodeLabel>
+        </xsl:if>
         <y:Shape type="ellipse"/>
       </y:ShapeNode>
     </data>
