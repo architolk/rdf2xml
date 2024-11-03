@@ -117,7 +117,10 @@
                 <xsl:variable name="predicate">
                   <xsl:for-each select="key('resources',key('predicate',key('predicatesubject',(@rdf:about|@rdf:nodeID))/(@rdf:about|@rdf:nodeID))/fbm:reading/(@rdf:resource|@rdf:nodeID))">
                     <xsl:if test="position()!=1"><xsl:text>&#xa;</xsl:text></xsl:if>
-                    <xsl:value-of select="fbm:text"/>
+                    <xsl:choose>
+                      <xsl:when test="exists(rdfs:label)"><xsl:value-of select="rdfs:label"/></xsl:when>
+                      <xsl:otherwise><xsl:value-of select="fbm:text"/></xsl:otherwise>
+                    </xsl:choose>
                   </xsl:for-each>
                 </xsl:variable>
                 <xsl:if test="$predicate!=''">
