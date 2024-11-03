@@ -53,6 +53,14 @@
   <xsl:apply-templates select="key('resources',rdf:Description/fbm:role/(@rdf:nodeID|@rdf:resource))" mode="edge"/>
 </xsl:template>
 
+<xsl:template match="rdf:Description" mode="predicatereading">
+  <xsl:choose>
+    <xsl:when test="exists(rdfs:label)"><xsl:value-of select="rdfs:label"/></xsl:when> <!-- Shorthand notation, use this -->
+    <xsl:when test="not(matches(fbm:text,'\[.+\]'))"><xsl:value-of select="fbm:text"/></xsl:when> <!-- Only when objecttypes are not mentioned! -->
+    <xsl:otherwise/> <!-- Don't do anything in other cases - we will use predicate reading on the whole fact type -->
+  </xsl:choose>
+</xsl:template>
+
 <xsl:template match="rdf:Description" mode="group">
     <node id="{@rdf:about}">
   		<data key="d3"><xsl:value-of select="@rdf:about"/></data>
@@ -75,8 +83,30 @@
                 </xsl:otherwise>
               </xsl:choose>
               <y:NodeLabel alignment="center" autoSizePolicy="node_width" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="sides" modelPosition="n" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.0" x="0.0" xml:space="preserve" y="-21.666015625"><xsl:apply-templates select="." mode="label"/></y:NodeLabel>
+              <xsl:variable name="rolepredicate">
+                <xsl:for-each select="key('resources',key('resources',fbm:predicate/(@rdf:resource|@rdf:nodeID))/fbm:reading/(@rdf:resource|@rdf:nodeID))">
+                  <xsl:apply-templates select="." mode="predicatereading"/>
+                </xsl:for-each>
+              </xsl:variable>
+              <xsl:if test="$rolepredicate=''">
+                <!-- Predicate reading(s) below the whole fact type -->
+                <xsl:variable name="predicate">
+                  <xsl:for-each select="key('resources',key('resources',fbm:predicate/(@rdf:resource|@rdf:nodeID))/fbm:reading/(@rdf:resource|@rdf:nodeID))">
+                    <xsl:if test="position()!=1"><xsl:text>&#x0a;</xsl:text></xsl:if>
+                    <xsl:value-of select="fbm:text"/>
+                  </xsl:for-each>
+                </xsl:variable>
+                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="sides" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="197.0546875" x="-39.01025390625" xml:space="preserve" y="70.0"><xsl:value-of select="$predicate"/></y:NodeLabel>
+              </xsl:if>
               <y:State closed="false" closedHeight="60" closedWidth="100" innerGraphDisplayEnabled="false"/>
-              <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0" top="15" topF="15.0"/>
+              <xsl:choose>
+                <xsl:when test="rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#Facttype'">
+                  <y:Insets bottom="5" bottomF="5.0" left="5" leftF="5.0" right="5" rightF="5.0" top="5" topF="5.0"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0" top="15" topF="15.0"/>
+                </xsl:otherwise>
+              </xsl:choose>
               <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0" topF="0.0"/>
             </y:GroupNode>
             <y:GroupNode>
@@ -114,15 +144,13 @@
                 <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
                 <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:value-of select="rdfs:label"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
                 <y:Shape type="rectangle"/>
-                <xsl:variable name="predicate">
+                <xsl:variable name="predicatedirty">
                   <xsl:for-each select="key('resources',key('predicate',key('predicatesubject',(@rdf:about|@rdf:nodeID))/(@rdf:about|@rdf:nodeID))/fbm:reading/(@rdf:resource|@rdf:nodeID))">
                     <xsl:if test="position()!=1"><xsl:text>&#xa;</xsl:text></xsl:if>
-                    <xsl:choose>
-                      <xsl:when test="exists(rdfs:label)"><xsl:value-of select="rdfs:label"/></xsl:when>
-                      <xsl:otherwise><xsl:value-of select="fbm:text"/></xsl:otherwise>
-                    </xsl:choose>
+                    <xsl:apply-templates select="." mode="predicatereading"/>
                   </xsl:for-each>
                 </xsl:variable>
+                <xsl:variable name="predicate"><xsl:value-of select="replace(replace($predicatedirty,'[&#xa;]+','&#xa;'),'[&#xa;]$','')"/></xsl:variable>
                 <xsl:if test="$predicate!=''">
                   <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="sides" modelPosition="s" textColor="#000000" verticalTextPosition="bottom" visible="true" width="83.91015625" x="-7.8818359375" xml:space="preserve" y="34.0"><xsl:value-of select="$predicate"/></y:NodeLabel>
                 </xsl:if>

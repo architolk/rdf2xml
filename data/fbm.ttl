@@ -2,7 +2,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 
 <urn:persoon> a fbm:Objecttype;
-  rdfs:label "persoon";
+  rdfs:label "person";
   fbm:role [
     fbm:playedBy <urn:pname>;
   ]
@@ -39,11 +39,11 @@
     fbm:ordersRole [fbm:role <urn:employee>; fbm:atPosition 1];
     fbm:ordersRole [fbm:role <urn:employer>; fbm:atPosition 2];
     fbm:reading [
-      fbm:text "works for";
+      fbm:text "[Person] works for [Organization]";
       fbm:parts (<urn:employee> "works for" <urn:employer>);
     ];
     fbm:reading [
-      fbm:text "has employer";
+      fbm:text "[Person] has employer [Organization]";
       fbm:parts (<urn:employee> "has employer" <urn:employer>);
     ]
   ];
@@ -51,7 +51,7 @@
     fbm:ordersRole [fbm:role <urn:employer>; fbm:atPosition 1];
     fbm:ordersRole [fbm:role <urn:employee>; fbm:atPosition 2];
     fbm:reading [
-      rdfs:label "has employee";
+      rdfs:xlabel "has employee";
       fbm:text "[Person] has employee [Organization]";
       fbm:parts (<urn:employer> "has employee" <urn:employee>)
     ]
