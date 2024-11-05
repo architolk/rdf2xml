@@ -83,7 +83,10 @@
                   <y:Shape type="ellipse"/>
                 </xsl:otherwise>
               </xsl:choose>
-              <y:NodeLabel alignment="center" autoSizePolicy="node_width" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="sides" modelPosition="n" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.0" x="0.0" xml:space="preserve" y="-21.666015625"><xsl:apply-templates select="." mode="label"/></y:NodeLabel>
+              <xsl:variable name="label"><xsl:apply-templates select="." mode="label"/></xsl:variable>
+              <xsl:if test="rdf:type/@rdf:resource!='http://bp4mc2.org/def/fbm#Facttype' or $label!=@rdf:about">
+                <y:NodeLabel alignment="center" autoSizePolicy="node_width" borderDistance="0.0" fontFamily="Dialog" fontSize="15" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="sides" modelPosition="n" textColor="#000000" verticalTextPosition="bottom" visible="true" width="90.0" x="0.0" xml:space="preserve" y="-21.666015625"><xsl:apply-templates select="." mode="label"/></y:NodeLabel>
+              </xsl:if>
               <xsl:variable name="rolepredicate">
                 <xsl:for-each select="key('resources',key('resources',fbm:predicate/(@rdf:resource|@rdf:nodeID))/fbm:reading/(@rdf:resource|@rdf:nodeID))">
                   <xsl:apply-templates select="." mode="predicatereading"/>

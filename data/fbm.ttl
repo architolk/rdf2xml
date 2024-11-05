@@ -1,7 +1,7 @@
 @prefix fbm: <http://bp4mc2.org/def/fbm#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 
-<urn:persoon> a fbm:Objecttype;
+<urn:person> a fbm:Objecttype;
   rdfs:label "person";
   fbm:role [
     fbm:playedBy <urn:pname>;
@@ -57,8 +57,8 @@
     fbm:ordersRole [fbm:role <urn:employer>; fbm:atPosition 1];
     fbm:ordersRole [fbm:role <urn:employee>; fbm:atPosition 2];
     fbm:reading [
-      rdfs:xlabel "has employee";
-      fbm:text "[Person] has employee [Organization]";
+#      rdfs:label "has employee";
+      fbm:text "[Organization] has employee [Person]";
       fbm:parts (<urn:employer> "has employee" <urn:employee>)
     ]
   ]
@@ -69,5 +69,54 @@
 .
 <urn:employee> a fbm:Role;
   rdfs:label "employee";
-  fbm:playedBy <urn:persoon>
+  fbm:playedBy <urn:person>
+.
+
+<urn:address> a fbm:Objecttype;
+  rdfs:label "address";
+  fbm:role [
+    fbm:playedBy <urn:streetName>;
+  ];
+  fbm:role [
+    fbm:playedBy <urn:houseNumber>;
+  ];
+  fbm:role [
+    fbm:playedBy <urn:city>;
+  ];
+.
+
+<urn:streetName> a fbm:Valuetype;
+  rdfs:label "street name";
+.
+
+<urn:houseNumber> a fbm:Valuetype;
+  rdfs:label "house number";
+.
+
+<urn:city> a fbm:Valuetype;
+  rdfs:label "city";
+.
+
+<urn:livingPlace> a fbm:Facttype;
+  fbm:role <urn:resident>;
+  fbm:role <urn:homeAddress>;
+  fbm:predicate [
+    fbm:ordersRole [fbm:role <urn:resident>; fbm:atPosition 1];
+    fbm:ordersRole [fbm:role <urn:homeAddress>; fbm:atPosition 2];
+    fbm:reading [
+#      rdfs:label "lives at";
+      fbm:text "[Person] lives at [Address]";
+    ];
+  ];
+  fbm:constraint [
+    a fbm:UniquenessConstraint;
+    fbm:restricts <urn:resident>;
+  ]
+.
+<urn:resident> a fbm:Role;
+  fbm:playedBy <urn:person>;
+.
+<urn:homeAddress> a fbm:Role;
+  rdfs:label "home address";
+  fbm:playedBy <urn:address>;
 .
