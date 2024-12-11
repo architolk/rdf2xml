@@ -201,6 +201,14 @@
     </xsl:for-each>
     <xsl:text>&#xa;&#xa;</xsl:text>
   </xsl:if>
+  <xsl:if test="exists(skos:example)">
+    <xsl:text>Voorbeeld(en): </xsl:text>
+    <xsl:for-each select="skos:example">
+      <xsl:if test="position()>1"><xsl:text>, </xsl:text></xsl:if>
+      <xsl:value-of select="."/>
+    </xsl:for-each>
+    <xsl:text>&#xa;&#xa;</xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="collection-toc-rec">
@@ -290,6 +298,8 @@
 
 <xsl:template match="rdf:RDF">
   <xsl:text># Begrippen</xsl:text>
+  <xsl:text>&#xa;&#xa;</xsl:text>
+  <xsl:text>![](begrippenmodel.svg "begrippenmodel")</xsl:text>
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and not(exists(skos:inScheme))]"><xsl:sort select="rdfs:label"/>
     <xsl:apply-templates select="." mode="scheme-content"/>

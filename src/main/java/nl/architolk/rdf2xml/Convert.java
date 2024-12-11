@@ -26,43 +26,63 @@ public class Convert {
 
     if (args.length >= 3) {
 
-      LOG.info("Input file: {}",args[0]);
-      LOG.info("Ouput file: {}",args[1]);
-      LOG.info("Stylesheet: {}",args[2]);
-
-      if (args.length >= 4) {
-      LOG.info("Parameters: {}",args[3]);
-      }
-
-      if (args.length == 5) {
-        LOG.info("2nd input:  {}",args[4]);
-      }
-
-      try {
-        Model model = RDFDataMgr.loadModel(args[0]);
-        // A better solution would be to use pipes in seperate threads
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        String preXML;
-        if (args.length >= 4) {
-          preXML = "<ROOT params='" + args[3] + "'>";
+      if (args[0].equals("-xml")) {
+        // Plain operation: input should be XML, direct transformation
+        if (args.length == 4) {
+          LOG.info("Plain XML transformation");
+          LOG.info("Input file: {}",args[1]);
+          LOG.info("Ouput file: {}",args[2]);
+          LOG.info("Stylesheet: {}",args[3]);
+          try {
+            XmlEngine.transform(new StreamSource(new File(args[1])),new StreamSource(new File(args[3])),new StreamResult(new File(args[2])));
+            LOG.info("Done!");
+          }
+          catch (Exception e) {
+            LOG.error(e.getMessage(),e);
+          }
         } else {
-          preXML = "<ROOT>";
+          LOG.warn("Usage: rdf2xml -xml <input.xml> <output.xml> <stylesheet.xsl>");
         }
-        buffer.write(preXML.getBytes());
-        RDFDataMgr.write(buffer, model, RDFFormat.RDFXML_PLAIN);
-        if (args.length == 5) {
+      } else {
+        // Normal operation: input should be RDF (XML, Turtle, JSON-LD)
+        LOG.info("Input file: {}",args[0]);
+        LOG.info("Ouput file: {}",args[1]);
+        LOG.info("Stylesheet: {}",args[2]);
 
-          TransformerFactory tf = TransformerFactory.newInstance();
-          Transformer transformer = tf.newTransformer();
-          transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-          transformer.transform(new StreamSource(new File(args[4])), new StreamResult(buffer));
+        if (args.length >= 4) {
+        LOG.info("Parameters: {}",args[3]);
         }
-        buffer.write(POSTXML.getBytes());
-        XmlEngine.transform(new StreamSource(new ByteArrayInputStream(buffer.toByteArray())),new StreamSource(new File(args[2])),new StreamResult(new File(args[1])));
-        LOG.info("Done!");
-      }
-      catch (Exception e) {
-        LOG.error(e.getMessage(),e);
+
+        if (args.length == 5) {
+          LOG.info("2nd input:  {}",args[4]);
+        }
+
+        try {
+          Model model = RDFDataMgr.loadModel(args[0]);
+          // A better solution would be to use pipes in seperate threads
+          ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+          String preXML;
+          if (args.length >= 4) {
+            preXML = "<ROOT params='" + args[3] + "'>";
+          } else {
+            preXML = "<ROOT>";
+          }
+          buffer.write(preXML.getBytes());
+          RDFDataMgr.write(buffer, model, RDFFormat.RDFXML_PLAIN);
+          if (args.length == 5) {
+
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.transform(new StreamSource(new File(args[4])), new StreamResult(buffer));
+          }
+          buffer.write(POSTXML.getBytes());
+          XmlEngine.transform(new StreamSource(new ByteArrayInputStream(buffer.toByteArray())),new StreamSource(new File(args[2])),new StreamResult(new File(args[1])));
+          LOG.info("Done!");
+        }
+        catch (Exception e) {
+          LOG.error(e.getMessage(),e);
+        }
       }
     } else {
       LOG.warn("Usage: rdf2xml <input> <output.xml> <stylesheet.xsl> [params] [input-2]");
