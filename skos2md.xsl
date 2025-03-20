@@ -10,7 +10,7 @@
   xmlns:skosxl="http://www.w3.org/2008/05/skos-xl#"
 >
 
-<xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about"/>
+<xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
 <xsl:key name="bnodes" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
 <xsl:key name="terms" match="/ROOT/rdf:RDF/rdf:Description[skosxl:literalForm!='']" use="lower-case(skosxl:literalForm)"/>
 
@@ -126,6 +126,11 @@
   <xsl:value-of select="substring('######',1,$level)"/><xsl:text> </xsl:text>
   <xsl:value-of select="rdfs:label"/>
   <xsl:text>&#xa;&#xa;</xsl:text>
+  <xsl:if test="rdf:type[@rdf:resource!='http://www.w3.org/2004/02/skos/core#Concept']/@rdf:resource!=''">
+    <xsl:text>*Een «</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>» is een </xsl:text>
+    <xsl:value-of select="lower-case(substring-after(rdf:type[@rdf:resource!='http://www.w3.org/2004/02/skos/core#Concept']/@rdf:resource,'#'))"/>
+    <xsl:text>.*&#xa;&#xa;</xsl:text>
+  </xsl:if>
   <xsl:if test="skos:altLabel[1]!=''">
     <xsl:text>Alternatieve aanduiding: </xsl:text>
     <xsl:for-each select="skos:altLabel">
@@ -197,7 +202,7 @@
     <xsl:text>Gerelateerd: </xsl:text>
     <xsl:for-each select="skos:related">
       <xsl:if test="position()>1"><xsl:text>, </xsl:text></xsl:if>
-      <xsl:apply-templates select="key('items',@rdf:resource)" mode="link"/>
+      <xsl:apply-templates select="key('items',@rdf:resource|@rdf:nodeID)" mode="link"/>
     </xsl:for-each>
     <xsl:text>&#xa;&#xa;</xsl:text>
   </xsl:if>
@@ -298,8 +303,10 @@
 
 <xsl:template match="rdf:RDF">
   <xsl:text># Begrippen</xsl:text>
+  <!-- TODO: Make this a configuration option
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:text>![](begrippenmodel.svg "begrippenmodel")</xsl:text>
+  -->
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and not(exists(skos:inScheme))]"><xsl:sort select="rdfs:label"/>
     <xsl:apply-templates select="." mode="scheme-content"/>
