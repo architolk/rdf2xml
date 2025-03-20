@@ -19,14 +19,14 @@
   <xsl:text>  "</xsl:text>
   <xsl:value-of select="replace(dct:identifier,'[^a-zA-Z0-9_-]','')"/>
   <xsl:text>": {&#xa;</xsl:text>
-  <xsl:if test="rdfs:label!=''">
+  <xsl:if test="rdfs:label[1]!=''">
     <xsl:text>    title: "</xsl:text>
-    <xsl:value-of select="replace(replace(rdfs:label,'\n',''),$doublequote,$doublequote-escape)"/>
+    <xsl:value-of select="replace(replace(rdfs:label[1],'\n',''),$doublequote,$doublequote-escape)"/>
     <xsl:text>",&#xa;</xsl:text>
   </xsl:if>
   <xsl:if test="dct:bibliographicCitation/@rdf:resource!=''">
     <xsl:text>    href: "</xsl:text>
-    <xsl:value-of select="dct:bibliographicCitation/@rdf:resource"/>
+    <xsl:value-of select="dct:bibliographicCitation[1]/@rdf:resource"/>
     <xsl:text>",&#xa;</xsl:text>
   </xsl:if>
   <xsl:text>  },&#xa;</xsl:text>
