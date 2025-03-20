@@ -1,4 +1,6 @@
 # rdf2xml
+
+## RDF to XML
 Transforming RDF to XML, using XSL stylesheet to create the XML from the RDF/XML data
 
 Usage:
@@ -22,4 +24,13 @@ For example:
     <text>This is the content of the second input</text>
   </some-xml>
 </ROOT>
+```
+
+## XML transformation
+This library can also be used to transform a regular XML file into something else, using a stylesheet.
+
+Usage:
+
+```
+java -jar rdf2xml -xml <input.xml> <output.xml> <stylesheet.xsl>
 ```
