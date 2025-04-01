@@ -11,6 +11,7 @@
 
 <xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about"/>
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
+<xsl:key name="statements" match="/ROOT/rdf:RDF/rdf:Description" use="rdf:subject/@rdf:resource"/>
 <xsl:key name="node-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
 <xsl:key name="edge-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:edge" use="graphml:data[@key='d7']"/>
 
@@ -87,14 +88,34 @@
 	<!--<xsl:for-each select="*[exists(key('items',@rdf:resource)) and local-name()!='inScheme' and local-name()!='grondslag']">-->
   <xsl:for-each select="*[exists(key('items',@rdf:resource)[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept'])]">
     <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
+    <xsl:variable name="predicate-uri"><xsl:value-of select="namespace-uri()"/><xsl:value-of select="local-name()"/></xsl:variable>
     <xsl:if test="not($params='taxonomy') or local-name()='broader' or local-name()='narrower' or local-name()='broaderGeneric' or local-name()='broaderPartitive' or local-name()='narrowerPartitive' or local-name()='narrowerGeneric'">
       <edge source="{$subject-uri}" target="{$object-uri}">
         <data key="d10">
           <y:PolyLineEdge>
             <y:LineStyle color="#000000" type="line" width="1.0"/>
-            <y:Arrows source="none" target="standard"/>
-            <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
-                <xsl:value-of select="local-name()"/><y:LabelModel>
+            <xsl:variable name="endarrow">
+              <xsl:choose>
+                <xsl:when test="$params='ext' and (local-name()='broader' or local-name()='broaderGeneric' or local-name()='broaderPartitive')">white_delta</xsl:when>
+                <xsl:otherwise>standard</xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
+            <xsl:variable name="statementlabel"><xsl:value-of select="key('statements',$subject-uri)[rdf:predicate/@rdf:resource=$predicate-uri and rdf:object/@rdf:resource=$object-uri]/rdfs:label"/></xsl:variable>
+            <xsl:variable name="edgelabel">
+              <xsl:choose>
+                <xsl:when test="$statementlabel!=''"><xsl:value-of select="$statementlabel"/></xsl:when>
+                <xsl:otherwise><xsl:value-of select="local-name()"/></xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
+            <xsl:variable name="fontstyle">
+              <xsl:choose>
+                <xsl:when test="$statementlabel!=''">italic</xsl:when>
+                <xsl:otherwise>plain</xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
+            <y:Arrows source="none" target="{$endarrow}"/>
+            <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="{$fontstyle}" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
+                <xsl:value-of select="$edgelabel"/><y:LabelModel>
                 <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
               <y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter>
               <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
