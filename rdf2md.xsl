@@ -35,8 +35,13 @@
 
 <!-- Deze nog integreren met degene hieronder -->
 <xsl:template match="@*" mode="reflabel">
-  <xsl:variable name="pshapelabel"><xsl:apply-templates select="key('nshape',.)[1]" mode="label"/></xsl:variable>
-  <xsl:variable name="nshapelabel"><xsl:apply-templates select="key('pshape',.)[1]" mode="label"/></xsl:variable>
+  <xsl:variable name="nshape" select="key('nshape',.)[1]"/>
+  <xsl:variable name="nshapelabel">
+    <xsl:if test=".!=$nshape/@rdf:about">
+      <xsl:apply-templates select="$nshape" mode="label"/>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="pshapelabel"><xsl:apply-templates select="key('pshape',.)[1]" mode="label"/></xsl:variable>
   <xsl:variable name="definedlabel"><xsl:apply-templates select="key('resource',.)" mode="label"/></xsl:variable>
   <xsl:choose>
     <xsl:when test="$definedlabel!=''"><xsl:value-of select="$definedlabel"/></xsl:when>
@@ -47,8 +52,13 @@
 </xsl:template>
 
 <xsl:template match="*" mode="label">
-  <xsl:variable name="pshapelabel"><xsl:apply-templates select="key('nshape',@rdf:about)[1]" mode="label"/></xsl:variable>
-  <xsl:variable name="nshapelabel"><xsl:apply-templates select="key('pshape',@rdf:about)[1]" mode="label"/></xsl:variable>
+  <xsl:variable name="nshape" select="key('nshape',@rdf:about)[1]"/>
+  <xsl:variable name="nshapelabel">
+    <xsl:if test="@rdf:about!=$nshape/@rdf:about">
+      <xsl:apply-templates select="$nshape" mode="label"/>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="pshapelabel"><xsl:apply-templates select="key('pshape',@rdf:about)[1]" mode="label"/></xsl:variable>
   <xsl:choose>
     <xsl:when test="exists(sh:name)"><xsl:value-of select="sh:name"/></xsl:when>
     <xsl:when test="$nshapelabel!=''"><xsl:value-of select="$nshapelabel"/></xsl:when>
@@ -259,13 +269,13 @@
   <xsl:apply-templates select="." mode="labelledlink"/>
   <xsl:text>&#xa;</xsl:text>
   <xsl:variable name="uri" select="@rdf:about"/>
-  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class' and rdfs:subClassOf/@rdf:resource=$uri]"><xsl:sort select="concat(key('nshape',@rdf:about)/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class' and rdfs:subClassOf/@rdf:resource=$uri]"><xsl:sort select="concat(key('nshape',@rdf:about)[1]/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
     <xsl:apply-templates select="." mode="class-hierarchy-leaf"><xsl:with-param name="spaces"><xsl:value-of select="concat($spaces,'  ')"/></xsl:with-param></xsl:apply-templates>
   </xsl:for-each>
 </xsl:template>
 
 <xsl:template match="rdf:RDF" mode="class-hierarchy">
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class' and not(exists(rdfs:subClassOf))]"><xsl:sort select="concat(key('nshape',@rdf:about)/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class' and not(exists(rdfs:subClassOf))]"><xsl:sort select="concat(key('nshape',@rdf:about)[1]/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
     <xsl:apply-templates select="." mode="class-hierarchy-leaf"><xsl:with-param name="spaces"></xsl:with-param></xsl:apply-templates>
   </xsl:for-each>
 </xsl:template>
@@ -278,7 +288,7 @@
   <xsl:apply-templates select="$ontologie" mode="header1"/>
   <xsl:apply-templates select="$klassen" mode="header2"/>
   <xsl:apply-templates select="." mode="class-hierarchy"/>
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class']"><xsl:sort select="concat(key('nshape',@rdf:about)/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class']"><xsl:sort select="concat(key('nshape',@rdf:about)[1]/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
     <xsl:apply-templates select="." mode="classes"/>
   </xsl:for-each>
   <xsl:apply-templates select="$relaties" mode="header2"/>
