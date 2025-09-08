@@ -52,6 +52,7 @@
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#Valuetype']" mode="node"/>
   <xsl:apply-templates select="key('resources',rdf:Description/fbm:role/(@rdf:nodeID|@rdf:resource))" mode="edge"/>
   <xsl:apply-templates select="rdf:Description/fbm:subtypeOf" mode="subtype"/>
+  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#SubsetConstraint']" mode="constraint"/>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="predicatereading">
@@ -232,6 +233,67 @@
       </y:PolyLineEdge>
     </data>
   </edge>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="constraint">
+  <xsl:variable name="constrainturi" select="@rdf:about|@rdf:nodeID"/>
+  <!-- The constraint node -->
+  <node id="{$constrainturi}">
+    <data key="d3"/>
+    <data key="d6">
+      <y:ShapeNode>
+        <y:Geometry height="20" width="20" x="400" y="455"/>
+        <y:Fill color="#FFFFFF" transparent="false"/>
+        <y:BorderStyle color="#000000" type="line" width="1.0"/>
+        <y:NodeLabel alignment="center" autoSizePolicy="node_width" borderDistance="0.0" fontFamily="Dialog" fontSize="18" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="21.666015625" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="c" textColor="#000000" verticalTextPosition="bottom" visible="true" width="87.0" x="0.0" xml:space="preserve" y="13.6669921875">⊆</y:NodeLabel>
+        <y:Shape type="ellipse"/>
+      </y:ShapeNode>
+    </data>
+  </node>
+  <!-- All edges to the constraint node -->
+  <xsl:apply-templates select="key('resources',fbm:roleSequenceSubset/@rdf:nodeID)" mode="toconstraintedge">
+    <xsl:with-param name="constraint" select="$constrainturi"/>
+  </xsl:apply-templates>
+  <!-- All edges from the constraint node -->
+  <xsl:apply-templates select="key('resources',fbm:roleSequenceSuperset/@rdf:nodeID)" mode="fromconstraintedge">
+    <xsl:with-param name="constraint" select="$constrainturi"/>
+  </xsl:apply-templates>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="fromconstraintedge">
+  <xsl:param name="constraint"/>
+  <xsl:variable name="role" select="rdf:first/(@rdf:resource|@rdf:nodeID)"/>
+  <edge id="{$constraint}.to.{$role}" source="{$constraint}" target="{$role}">
+    <data key="d10">
+      <y:PolyLineEdge>
+        <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+        <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+        <y:Arrows source="none" target="standard"/>
+        <y:BendStyle smoothed="false"/>
+      </y:PolyLineEdge>
+    </data>
+  </edge>
+  <xsl:apply-templates select="key('resources',rdf:rest/@rdf:nodeID)" mode="fromconstraintedge">
+    <xsl:with-param name="constraint" select="$constraint"/>
+  </xsl:apply-templates>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="toconstraintedge">
+  <xsl:param name="constraint"/>
+  <xsl:variable name="role" select="rdf:first/(@rdf:resource|@rdf:nodeID)"/>
+  <edge id="{$role}.to.{$constraint}" source="{$role}" target="{$constraint}">
+    <data key="d10">
+      <y:PolyLineEdge>
+        <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+        <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+        <y:Arrows source="none" target="none"/>
+        <y:BendStyle smoothed="false"/>
+      </y:PolyLineEdge>
+    </data>
+  </edge>
+  <xsl:apply-templates select="key('resources',rdf:rest/@rdf:nodeID)" mode="toconstraintedge">
+    <xsl:with-param name="constraint" select="$constraint"/>
+  </xsl:apply-templates>
 </xsl:template>
 
 </xsl:stylesheet>
