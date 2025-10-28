@@ -1,10 +1,10 @@
 @prefix fbm: <http://bp4mc2.org/def/fbm#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 
-<urn:person> a fbm:Objecttype;
+<urn:facttype:person> a fbm:Objecttype;
   rdfs:label "person";
   fbm:role [
-    fbm:playedBy <urn:role:pname>;
+    fbm:playedBy <urn:facttype:pname>;
   ]
 .
 
@@ -15,7 +15,7 @@
 <urn:facttype:organisation> a fbm:Objecttype;
   rdfs:label "organisation";
   fbm:role [
-    fbm:playedBy <urn:role:oname>;
+    fbm:playedBy <urn:facttype:oname>;
   ]
 .
 
@@ -59,11 +59,11 @@
 .
 <urn:role:employer> a fbm:Role;
   rdfs:label "employer";
-  fbm:playedBy <urn:organisation>
+  fbm:playedBy <urn:facttype:organisation>
 .
 <urn:role:employee> a fbm:Role;
   rdfs:label "employee";
-  fbm:playedBy <urn:person>
+  fbm:playedBy <urn:facttype:person>
 .
 
 <urn:facttype:address> a fbm:Objecttype;
@@ -92,8 +92,8 @@
 .
 
 <urn:facttype:livingPlace> a fbm:Facttype;
-  fbm:role <urn:resident>;
-  fbm:role <urn:homeAddress>;
+  fbm:role <urn:role:resident>;
+  fbm:role <urn:role:homeAddress>;
   fbm:predicate [
     fbm:ordersRole [fbm:role <urn:resident>; fbm:atPosition 1];
     fbm:ordersRole [fbm:role <urn:homeAddress>; fbm:atPosition 2];
@@ -108,9 +108,9 @@
   ]
 .
 <urn:role:resident> a fbm:Role;
-  fbm:playedBy <urn:person>;
+  fbm:playedBy <urn:facttype:person>;
 .
 <urn:role:homeAddress> a fbm:Role;
   rdfs:label "home address";
-  fbm:playedBy <urn:address>;
+  fbm:playedBy <urn:facttype:address>;
 .

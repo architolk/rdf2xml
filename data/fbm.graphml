@@ -12,13 +12,246 @@
    <key for="node" id="d6" yfiles.type="nodegraphics"/>
    <key for="edge" id="d10" yfiles.type="edgegraphics"/>
    <graph id="G" edgedefault="directed">
-      <node id="urn:persoon">
-         <data key="d3">urn:persoon</data>
+      <node id="urn:facttype:address">
+         <data key="d3">urn:facttype:address</data>
          <data key="d6" yfiles.foldertype="group">
             <y:ProxyAutoBoundsNode>
                <y:Realizers active="0">
                   <y:GroupNode>
-                     <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="120.0"
+                                 x="1008.0"
+                                 y="251.0"/>
+                     <y:Fill color="#F5F5F5" transparent="false"/>
+                     <y:Fill color="#F5F5F5" transparent="false"/>
+                     <y:BorderStyle color="#000000" type="line" width="1.0"/>
+                     <y:Shape type="ellipse"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="node_width" borderDistance="0.0"
+                                  fontFamily="Dialog"
+                                  fontSize="15"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="21.666015625"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="sides"
+                                  modelPosition="n"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="90.0"
+                                  x="0.0"
+                                  xml:space="preserve"
+                                  y="-21.666015625">address</y:NodeLabel>
+                     <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="18.1328125"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="sides"
+                                  modelPosition="s"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="197.0546875"
+                                  x="-39.01025390625"
+                                  xml:space="preserve"
+                                  y="70.0"/>
+                     <y:State closed="false" closedHeight="60" closedWidth="100"
+                              innerGraphDisplayEnabled="false"/>
+                     <y:Insets bottom="15" bottomF="15.0" left="15" leftF="15.0" right="15" rightF="15.0"
+                               top="15"
+                               topF="15.0"/>
+                     <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0"
+                                     topF="0.0"/>
+                  </y:GroupNode>
+                  <y:GroupNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="90.0"
+                                 x="316.0"
+                                 y="379.0"/>
+                     <y:Fill color="#F5F5F5" transparent="false"/>
+                     <y:BorderStyle color="#000000" type="line" width="1.0"/>
+                     <y:Shape type="ellipse"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="node_width" borderDistance="0.0"
+                                  fontFamily="Dialog"
+                                  fontSize="15"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="21.666015625"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="internal"
+                                  modelPosition="c"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="87.0"
+                                  x="0.0"
+                                  xml:space="preserve"
+                                  y="13.6669921875">address</y:NodeLabel>
+                     <y:State closed="true" closedHeight="60" closedWidth="100"
+                              innerGraphDisplayEnabled="false"/>
+                     <y:Insets bottom="5" bottomF="5.0" left="5" leftF="5.0" right="5" rightF="5.0" top="5"
+                               topF="5.0"/>
+                     <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0"
+                                     topF="0.0"/>
+                  </y:GroupNode>
+               </y:Realizers>
+            </y:ProxyAutoBoundsNode>
+         </data>
+         <graph edgedefault="directed" id="urn:facttype:address:">
+            <node id="A5">
+               <data key="d3">urn:facttype:address:urn:role:houseNumber</data>
+               <data key="d6">
+                  <y:ShapeNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="30.0"
+                                 x="1053.0"
+                                 y="266.0"/>
+                     <y:Fill color="#FFCC00" transparent="false"/>
+                     <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="18.1328125"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="custom"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="11.587890625"
+                                  x="9.2060546875"
+                                  xml:space="preserve"
+                                  y="5.93359375"><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                                                           offsetX="0.0"
+                                                           offsetY="0.0"
+                                                           upX="0.0"
+                                                           upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+                     <y:Shape type="rectangle"/>
+                  </y:ShapeNode>
+               </data>
+            </node>
+            <node id="A15">
+               <data key="d3">urn:facttype:address:urn:role:city</data>
+               <data key="d6">
+                  <y:ShapeNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="30.0"
+                                 x="1083.0"
+                                 y="266.0"/>
+                     <y:Fill color="#FFCC00" transparent="false"/>
+                     <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="18.1328125"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="custom"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="11.587890625"
+                                  x="9.2060546875"
+                                  xml:space="preserve"
+                                  y="5.93359375"><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                                                           offsetX="0.0"
+                                                           offsetY="0.0"
+                                                           upX="0.0"
+                                                           upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+                     <y:Shape type="rectangle"/>
+                  </y:ShapeNode>
+               </data>
+            </node>
+            <node id="A18">
+               <data key="d3">urn:facttype:address:urn:role:streetName</data>
+               <data key="d6">
+                  <y:ShapeNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="30.0"
+                                 x="1023.0"
+                                 y="266.0"/>
+                     <y:Fill color="#FFCC00" transparent="false"/>
+                     <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="18.1328125"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="custom"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="11.587890625"
+                                  x="9.2060546875"
+                                  xml:space="preserve"
+                                  y="5.93359375"><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                                                           offsetX="0.0"
+                                                           offsetY="0.0"
+                                                           upX="0.0"
+                                                           upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+                     <y:Shape type="rectangle"/>
+                  </y:ShapeNode>
+               </data>
+            </node>
+         </graph>
+      </node>
+      <node id="urn:facttype:person">
+         <data key="d3">urn:facttype:person</data>
+         <data key="d6" yfiles.foldertype="group">
+            <y:ProxyAutoBoundsNode>
+               <y:Realizers active="0">
+                  <y:GroupNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="60.0"
+                                 x="656.0"
+                                 y="251.0"/>
                      <y:Fill color="#F5F5F5" transparent="false"/>
                      <y:Fill color="#F5F5F5" transparent="false"/>
                      <y:BorderStyle color="#000000" type="line" width="1.0"/>
@@ -66,7 +299,16 @@
                                      topF="0.0"/>
                   </y:GroupNode>
                   <y:GroupNode>
-                     <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="90.0"
+                                 x="316.0"
+                                 y="379.0"/>
                      <y:Fill color="#F5F5F5" transparent="false"/>
                      <y:BorderStyle color="#000000" type="line" width="1.0"/>
                      <y:Shape type="ellipse"/>
@@ -98,12 +340,21 @@
                </y:Realizers>
             </y:ProxyAutoBoundsNode>
          </data>
-         <graph edgedefault="directed" id="urn:persoon:">
-            <node id="A10">
-               <data key="d3">urn:persoon:urn:pname</data>
+         <graph edgedefault="directed" id="urn:facttype:person:">
+            <node id="A19">
+               <data key="d3">urn:facttype:person:urn:facttype:pname</data>
                <data key="d6">
                   <y:ShapeNode>
-                     <y:Geometry height="30" width="30" x="600" y="455"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="30.0"
+                                 x="671.0"
+                                 y="266.0"/>
                      <y:Fill color="#FFCC00" transparent="false"/>
                      <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
                      <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
@@ -131,13 +382,22 @@
             </node>
          </graph>
       </node>
-      <node id="urn:organisation">
-         <data key="d3">urn:organisation</data>
+      <node id="urn:facttype:organisation">
+         <data key="d3">urn:facttype:organisation</data>
          <data key="d6" yfiles.foldertype="group">
             <y:ProxyAutoBoundsNode>
                <y:Realizers active="0">
                   <y:GroupNode>
-                     <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="60.0"
+                                 x="258.0"
+                                 y="251.0"/>
                      <y:Fill color="#F5F5F5" transparent="false"/>
                      <y:Fill color="#F5F5F5" transparent="false"/>
                      <y:BorderStyle color="#000000" type="line" width="1.0"/>
@@ -185,7 +445,16 @@
                                      topF="0.0"/>
                   </y:GroupNode>
                   <y:GroupNode>
-                     <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="90.0"
+                                 x="316.0"
+                                 y="379.0"/>
                      <y:Fill color="#F5F5F5" transparent="false"/>
                      <y:BorderStyle color="#000000" type="line" width="1.0"/>
                      <y:Shape type="ellipse"/>
@@ -217,12 +486,21 @@
                </y:Realizers>
             </y:ProxyAutoBoundsNode>
          </data>
-         <graph edgedefault="directed" id="urn:organisation:">
-            <node id="A20">
-               <data key="d3">urn:organisation:urn:oname</data>
+         <graph edgedefault="directed" id="urn:facttype:organisation:">
+            <node id="A4">
+               <data key="d3">urn:facttype:organisation:urn:facttype:oname</data>
                <data key="d6">
                   <y:ShapeNode>
-                     <y:Geometry height="30" width="30" x="600" y="455"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="30.0"
+                                 x="273.0"
+                                 y="266.0"/>
                      <y:Fill color="#FFCC00" transparent="false"/>
                      <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
                      <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
@@ -250,13 +528,188 @@
             </node>
          </graph>
       </node>
-      <node id="urn:employment">
-         <data key="d3">urn:employment</data>
+      <node id="urn:facttype:livingPlace">
+         <data key="d3">urn:facttype:livingPlace</data>
          <data key="d6" yfiles.foldertype="group">
             <y:ProxyAutoBoundsNode>
                <y:Realizers active="0">
                   <y:GroupNode>
-                     <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="40.0"
+                                 width="132.0"
+                                 x="796.0"
+                                 y="261.0"/>
+                     <y:Fill color="#F5F5F5" transparent="false"/>
+                     <y:Fill hasColor="false" transparent="false"/>
+                     <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+                     <y:Shape type="rectangle"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="18.1328125"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="sides"
+                                  modelPosition="s"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="197.0546875"
+                                  x="-39.01025390625"
+                                  xml:space="preserve"
+                                  y="70.0">[Person] lives at [Address]</y:NodeLabel>
+                     <y:State closed="false" closedHeight="60" closedWidth="100"
+                              innerGraphDisplayEnabled="false"/>
+                     <y:Insets bottom="5" bottomF="5.0" left="5" leftF="5.0" right="5" rightF="5.0" top="5"
+                               topF="5.0"/>
+                     <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0"
+                                     topF="0.0"/>
+                  </y:GroupNode>
+                  <y:GroupNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="90.0"
+                                 x="316.0"
+                                 y="379.0"/>
+                     <y:Fill hasColor="false" transparent="false"/>
+                     <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+                     <y:Shape type="rectangle"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="node_width" borderDistance="0.0"
+                                  fontFamily="Dialog"
+                                  fontSize="15"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="21.666015625"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="internal"
+                                  modelPosition="c"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="87.0"
+                                  x="0.0"
+                                  xml:space="preserve"
+                                  y="13.6669921875">urn:facttype:livingPlace</y:NodeLabel>
+                     <y:State closed="true" closedHeight="60" closedWidth="100"
+                              innerGraphDisplayEnabled="false"/>
+                     <y:Insets bottom="5" bottomF="5.0" left="5" leftF="5.0" right="5" rightF="5.0" top="5"
+                               topF="5.0"/>
+                     <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0"
+                                     topF="0.0"/>
+                  </y:GroupNode>
+               </y:Realizers>
+            </y:ProxyAutoBoundsNode>
+         </data>
+         <graph edgedefault="directed" id="urn:facttype:livingPlace:">
+            <node id="urn:role:resident">
+               <data key="d3">urn:role:resident</data>
+               <data key="d6">
+                  <y:ShapeNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="30.0"
+                                 x="801.0"
+                                 y="266.0"/>
+                     <y:Fill color="#FFCC00" transparent="false"/>
+                     <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="18.1328125"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="custom"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="11.587890625"
+                                  x="9.2060546875"
+                                  xml:space="preserve"
+                                  y="5.93359375"><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                                                           offsetX="0.0"
+                                                           offsetY="0.0"
+                                                           upX="0.0"
+                                                           upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+                     <y:Shape type="rectangle"/>
+                  </y:ShapeNode>
+               </data>
+            </node>
+            <node id="urn:role:homeAddress">
+               <data key="d3">urn:role:homeAddress</data>
+               <data key="d6">
+                  <y:ShapeNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="92.0"
+                                 x="831.0"
+                                 y="266.0"/>
+                     <y:Fill color="#FFCC00" transparent="false"/>
+                     <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+                     <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                                  fontStyle="plain"
+                                  hasBackgroundColor="false"
+                                  hasLineColor="false"
+                                  height="18.1328125"
+                                  horizontalTextPosition="center"
+                                  iconTextGap="4"
+                                  modelName="custom"
+                                  textColor="#000000"
+                                  verticalTextPosition="bottom"
+                                  visible="true"
+                                  width="11.587890625"
+                                  x="9.2060546875"
+                                  xml:space="preserve"
+                                  y="5.93359375">home address<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                                                           offsetX="0.0"
+                                                           offsetY="0.0"
+                                                           upX="0.0"
+                                                           upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+                     <y:Shape type="rectangle"/>
+                  </y:ShapeNode>
+               </data>
+            </node>
+         </graph>
+      </node>
+      <node id="urn:facttype:employment">
+         <data key="d3">urn:facttype:employment</data>
+         <data key="d6" yfiles.foldertype="group">
+            <y:ProxyAutoBoundsNode>
+               <y:Realizers active="0">
+                  <y:GroupNode>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="46.0"
+                                 width="131.0"
+                                 x="403.0"
+                                 y="255.0"/>
                      <y:Fill color="#F5F5F5" transparent="false"/>
                      <y:Fill hasColor="false" transparent="false"/>
                      <y:BorderStyle hasColor="false" type="line" width="1.0"/>
@@ -294,8 +747,8 @@
                                   width="197.0546875"
                                   x="-39.01025390625"
                                   xml:space="preserve"
-                                  y="70.0">[Person] works for [Organization]
-[Person] has employee [Organization]
+                                  y="70.0">[Organization] has employee [Person]
+[Person] works for [Organization]
 [Person] has employer [Organization]</y:NodeLabel>
                      <y:State closed="false" closedHeight="60" closedWidth="100"
                               innerGraphDisplayEnabled="false"/>
@@ -305,7 +758,16 @@
                                      topF="0.0"/>
                   </y:GroupNode>
                   <y:GroupNode>
-                     <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="60.0"
+                                 width="90.0"
+                                 x="316.0"
+                                 y="379.0"/>
                      <y:Fill hasColor="false" transparent="false"/>
                      <y:BorderStyle hasColor="false" type="line" width="1.0"/>
                      <y:Shape type="rectangle"/>
@@ -337,12 +799,21 @@
                </y:Realizers>
             </y:ProxyAutoBoundsNode>
          </data>
-         <graph edgedefault="directed" id="urn:employment:">
-            <node id="urn:employer">
-               <data key="d3">urn:employer</data>
+         <graph edgedefault="directed" id="urn:facttype:employment:">
+            <node id="urn:role:employer">
+               <data key="d3">urn:role:employer</data>
                <data key="d6">
                   <y:ShapeNode>
-                     <y:Geometry height="30" width="30" x="600" y="455"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="60.0"
+                                 x="408.0"
+                                 y="266.0"/>
                      <y:Fill color="#FFCC00" transparent="false"/>
                      <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
                      <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
@@ -368,21 +839,30 @@
                   </y:ShapeNode>
                </data>
             </node>
-            <node id="A6-1">
+            <node id="A23-1">
                <data key="d6">
                   <y:ShapeNode>
-                     <y:Geometry height="2" width="30" x="600" y="449"/>
+                     <y:Geometry height="2" width="60.0" x="408.0" y="260"/>
                      <y:Fill color="#000000" transparent="false"/>
                      <y:BorderStyle hascolor="false" type="line" width="1.0"/>
                      <y:Shape type="rectangle"/>
                   </y:ShapeNode>
                </data>
             </node>
-            <node id="urn:employee">
-               <data key="d3">urn:employee</data>
+            <node id="urn:role:employee">
+               <data key="d3">urn:role:employee</data>
                <data key="d6">
                   <y:ShapeNode>
-                     <y:Geometry height="30" width="30" x="630" y="455"/>
+                     <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                                 xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                                 xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                                 xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                 xmlns:yed="http://www.yworks.com/xml/yed/3"
+                                 height="30.0"
+                                 width="61.0"
+                                 x="468.0"
+                                 y="266.0"/>
                      <y:Fill color="#FFCC00" transparent="false"/>
                      <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
                      <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
@@ -408,10 +888,10 @@
                   </y:ShapeNode>
                </data>
             </node>
-            <node id="A6-2">
+            <node id="A23-2">
                <data key="d6">
                   <y:ShapeNode>
-                     <y:Geometry height="2" width="30" x="630" y="449"/>
+                     <y:Geometry height="2" width="61.0" x="468.0" y="260"/>
                      <y:Fill color="#000000" transparent="false"/>
                      <y:BorderStyle hascolor="false" type="line" width="1.0"/>
                      <y:Shape type="rectangle"/>
@@ -420,11 +900,98 @@
             </node>
          </graph>
       </node>
-      <node id="urn:pname">
-         <data key="d3"/>
+      <node id="urn:role:houseNumber">
+         <data key="d3">urn:role:houseNumber</data>
          <data key="d6">
             <y:ShapeNode>
-               <y:Geometry height="30" width="30" x="600" y="455"/>
+               <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                           xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                           xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                           xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xmlns:yed="http://www.yworks.com/xml/yed/3"
+                           height="30.0"
+                           width="30.0"
+                           x="1053.0"
+                           y="358.0"/>
+               <y:Fill color="#F5F5F5" transparent="false"/>
+               <y:BorderStyle color="#000000" raised="false" type="dashed" width="1.0"/>
+               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                            fontStyle="plain"
+                            hasBackgroundColor="false"
+                            hasLineColor="false"
+                            height="18.1328125"
+                            horizontalTextPosition="center"
+                            iconTextGap="4"
+                            modelName="custom"
+                            textColor="#000000"
+                            verticalTextPosition="bottom"
+                            visible="true"
+                            width="11.587890625"
+                            x="9.2060546875"
+                            xml:space="preserve"
+                            y="5.93359375">house number<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                                                     offsetX="0.0"
+                                                     offsetY="0.0"
+                                                     upX="0.0"
+                                                     upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+               <y:Shape type="ellipse"/>
+            </y:ShapeNode>
+         </data>
+      </node>
+      <node id="urn:role:streetName">
+         <data key="d3">urn:role:streetName</data>
+         <data key="d6">
+            <y:ShapeNode>
+               <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                           xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                           xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                           xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xmlns:yed="http://www.yworks.com/xml/yed/3"
+                           height="30.0"
+                           width="30.0"
+                           x="958.0"
+                           y="358.0"/>
+               <y:Fill color="#F5F5F5" transparent="false"/>
+               <y:BorderStyle color="#000000" raised="false" type="dashed" width="1.0"/>
+               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
+                            fontStyle="plain"
+                            hasBackgroundColor="false"
+                            hasLineColor="false"
+                            height="18.1328125"
+                            horizontalTextPosition="center"
+                            iconTextGap="4"
+                            modelName="custom"
+                            textColor="#000000"
+                            verticalTextPosition="bottom"
+                            visible="true"
+                            width="11.587890625"
+                            x="9.2060546875"
+                            xml:space="preserve"
+                            y="5.93359375">street name<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                                                     offsetX="0.0"
+                                                     offsetY="0.0"
+                                                     upX="0.0"
+                                                     upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+               <y:Shape type="ellipse"/>
+            </y:ShapeNode>
+         </data>
+      </node>
+      <node id="urn:facttype:pname">
+         <data key="d3">urn:facttype:pname</data>
+         <data key="d6">
+            <y:ShapeNode>
+               <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                           xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                           xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                           xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xmlns:yed="http://www.yworks.com/xml/yed/3"
+                           height="30.0"
+                           width="30.0"
+                           x="671.0"
+                           y="372.0"/>
                <y:Fill color="#F5F5F5" transparent="false"/>
                <y:BorderStyle color="#000000" raised="false" type="dashed" width="1.0"/>
                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
@@ -450,11 +1017,20 @@
             </y:ShapeNode>
          </data>
       </node>
-      <node id="urn:name">
-         <data key="d3"/>
+      <node id="urn:role:city">
+         <data key="d3">urn:role:city</data>
          <data key="d6">
             <y:ShapeNode>
-               <y:Geometry height="30" width="30" x="630" y="455"/>
+               <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                           xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                           xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                           xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xmlns:yed="http://www.yworks.com/xml/yed/3"
+                           height="30.0"
+                           width="30.0"
+                           x="1132.0"
+                           y="358.0"/>
                <y:Fill color="#F5F5F5" transparent="false"/>
                <y:BorderStyle color="#000000" raised="false" type="dashed" width="1.0"/>
                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
@@ -471,7 +1047,7 @@
                             width="11.587890625"
                             x="9.2060546875"
                             xml:space="preserve"
-                            y="5.93359375">name<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
+                            y="5.93359375">city<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0"
                                                      offsetX="0.0"
                                                      offsetY="0.0"
                                                      upX="0.0"
@@ -480,11 +1056,20 @@
             </y:ShapeNode>
          </data>
       </node>
-      <node id="urn:oname">
-         <data key="d3"/>
+      <node id="urn:facttype:oname">
+         <data key="d3">urn:facttype:oname</data>
          <data key="d6">
             <y:ShapeNode>
-               <y:Geometry height="30" width="30" x="660" y="455"/>
+               <y:Geometry xmlns="http://graphml.graphdrawing.org/xmlns"
+                           xmlns:java="http://www.yworks.com/xml/yfiles-common/1.0/java"
+                           xmlns:sys="http://www.yworks.com/xml/yfiles-common/markup/primitives/2.0"
+                           xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/2.0"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xmlns:yed="http://www.yworks.com/xml/yed/3"
+                           height="30.0"
+                           width="30.0"
+                           x="273.0"
+                           y="394.0"/>
                <y:Fill color="#F5F5F5" transparent="false"/>
                <y:BorderStyle color="#000000" raised="false" type="dashed" width="1.0"/>
                <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12"
@@ -510,7 +1095,38 @@
             </y:ShapeNode>
          </data>
       </node>
-      <edge id="urn:employer" source="urn:employer" target="urn:organisation">
+      <edge id="A4" source="A4" target="urn:facttype:oname">
+         <data key="d10">
+            <y:PolyLineEdge>
+               <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+               <y:LineStyle color="#000000" type="line" width="1.0"/>
+               <y:Arrows source="none" target="none"/>
+               <y:BendStyle smoothed="false"/>
+            </y:PolyLineEdge>
+         </data>
+      </edge>
+      <edge id="A5" source="A5" target="urn:role:houseNumber">
+         <data key="d10">
+            <y:PolyLineEdge>
+               <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+               <y:LineStyle color="#000000" type="line" width="1.0"/>
+               <y:Arrows source="none" target="none"/>
+               <y:BendStyle smoothed="false"/>
+            </y:PolyLineEdge>
+         </data>
+      </edge>
+      <edge id="A15" source="A15" target="urn:role:city">
+         <data key="d10">
+            <y:PolyLineEdge>
+               <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+               <y:LineStyle color="#000000" type="line" width="1.0"/>
+               <y:Arrows source="none" target="none"/>
+               <y:BendStyle smoothed="false"/>
+            </y:PolyLineEdge>
+         </data>
+      </edge>
+      <edge id="urn:role:employer" source="urn:role:employer"
+            target="urn:facttype:organisation">
          <data key="d10">
             <y:PolyLineEdge>
                <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -520,7 +1136,7 @@
             </y:PolyLineEdge>
          </data>
       </edge>
-      <edge id="urn:employee" source="urn:employee" target="urn:persoon">
+      <edge id="A18" source="A18" target="urn:role:streetName">
          <data key="d10">
             <y:PolyLineEdge>
                <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -530,7 +1146,7 @@
             </y:PolyLineEdge>
          </data>
       </edge>
-      <edge id="A10" source="A10" target="urn:pname">
+      <edge id="urn:role:employee" source="urn:role:employee" target="urn:facttype:person">
          <data key="d10">
             <y:PolyLineEdge>
                <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -540,7 +1156,7 @@
             </y:PolyLineEdge>
          </data>
       </edge>
-      <edge id="A20" source="A20" target="urn:oname">
+      <edge id="urn:role:resident" source="urn:role:resident" target="urn:facttype:person">
          <data key="d10">
             <y:PolyLineEdge>
                <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -550,22 +1166,23 @@
             </y:PolyLineEdge>
          </data>
       </edge>
-      <edge id="urn:pname.subtype" source="urn:pname" target="urn:name">
+      <edge id="A19" source="A19" target="urn:facttype:pname">
          <data key="d10">
             <y:PolyLineEdge>
                <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
                <y:LineStyle color="#000000" type="line" width="1.0"/>
-               <y:Arrows source="none" target="white_delta"/>
+               <y:Arrows source="none" target="none"/>
                <y:BendStyle smoothed="false"/>
             </y:PolyLineEdge>
          </data>
       </edge>
-      <edge id="urn:oname.subtype" source="urn:oname" target="urn:name">
+      <edge id="urn:role:homeAddress" source="urn:role:homeAddress"
+            target="urn:facttype:address">
          <data key="d10">
             <y:PolyLineEdge>
                <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
                <y:LineStyle color="#000000" type="line" width="1.0"/>
-               <y:Arrows source="none" target="white_delta"/>
+               <y:Arrows source="none" target="none"/>
                <y:BendStyle smoothed="false"/>
             </y:PolyLineEdge>
          </data>

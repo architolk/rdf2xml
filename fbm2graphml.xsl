@@ -9,11 +9,16 @@
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
 
+<xsl:output indent="yes"/>
+
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
 <xsl:key name="mandatoryrole" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#MandatoryConstraint']" use="fbm:restricts/(@rdf:resource|@rdf:nodeID)"/>
 <xsl:key name="uniquerole" match="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#UniquenessConstraint']" use="fbm:restricts/(@rdf:resource|@rdf:nodeID)"/>
 <xsl:key name="predicatesubject" match="/ROOT/rdf:RDF/rdf:Description[fbm:atPosition=1]" use="fbm:role/(@rdf:resource|@rdf:nodeID)"/>
 <xsl:key name="predicate" match="/ROOT/rdf:RDF/rdf:Description" use="fbm:ordersRole/(@rdf:resource|@rdf:nodeID)"/>
+
+<xsl:key name="node-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
+<xsl:key name="role-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
@@ -64,13 +69,19 @@
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="group">
+    <xsl:variable name="group-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
+    <xsl:variable name="group-geo" select="key('node-geo',$group-uri)"/>
     <node id="{@rdf:about}">
   		<data key="d3"><xsl:value-of select="@rdf:about"/></data>
   		<data key="d6" yfiles.foldertype="group">
         <y:ProxyAutoBoundsNode>
           <y:Realizers active="0">
+            <!-- Group node expanded (normal situation) -->
             <y:GroupNode>
-              <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+              <xsl:choose>
+                <xsl:when test="exists($group-geo/graphml:data/y:ProxyAutoBoundsNode/y:Realizers/y:GroupNode[y:State/@closed='false']/y:Geometry)"><xsl:copy-of select="$group-geo/graphml:data/y:ProxyAutoBoundsNode/y:Realizers/y:GroupNode[y:State/@closed='false']/y:Geometry"/></xsl:when>
+      				  <xsl:otherwise><y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/></xsl:otherwise>
+              </xsl:choose>
               <y:Fill color="#F5F5F5" transparent="false"/>
               <xsl:choose>
                 <xsl:when test="rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#Facttype'">
@@ -114,8 +125,12 @@
               </xsl:choose>
               <y:BorderInsets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0" topF="0.0"/>
             </y:GroupNode>
+            <!-- Group node no details (alternative view) -->
             <y:GroupNode>
-              <y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/>
+              <xsl:choose>
+                <xsl:when test="exists($group-geo/graphml:data/y:ProxyAutoBoundsNode/y:Realizers/y:GroupNode[y:State/@closed='true']/y:Geometry)"><xsl:copy-of select="$group-geo/graphml:data/y:ProxyAutoBoundsNode/y:Realizers/y:GroupNode[y:State/@closed='true']/y:Geometry"/></xsl:when>
+      				  <xsl:otherwise><y:Geometry height="60.0" width="90.0" x="316.0" y="379.0"/></xsl:otherwise>
+              </xsl:choose>
               <xsl:choose>
                 <xsl:when test="rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#Facttype'">
                   <y:Fill hasColor="false" transparent="false"/>
@@ -139,12 +154,40 @@
       <graph edgedefault="directed" id="{@rdf:about}:">
         <xsl:for-each select="key('resources',fbm:role/(@rdf:nodeID|@rdf:resource))">
           <xsl:variable name="roleposition"><xsl:value-of select="position()"/></xsl:variable>
-          <xsl:variable name="xpos"><xsl:value-of select="570+position()*30"/></xsl:variable>
+          <xsl:variable name="role-uri">
+            <xsl:choose>
+              <xsl:when test="@rdf:about!=''"><xsl:value-of select="@rdf:about"/></xsl:when>
+              <xsl:when test="fbm:playedBy/@rdf:resource!=''"><xsl:value-of select="$group-uri"/>:<xsl:value-of select="fbm:playedBy/@rdf:resource"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="rdf:nodeID"/></xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+          <xsl:variable name="role-geo" select="key('role-geo',$role-uri)"/>
+          <xsl:variable name="xpos">
+            <xsl:choose>
+              <xsl:when test="$role-geo/graphml:data/y:ShapeNode/y:Geometry/@x!=''"><xsl:value-of select="$role-geo/graphml:data/y:ShapeNode/y:Geometry/@x"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="570+position()*30"/></xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+          <xsl:variable name="ypos">
+            <xsl:choose>
+              <xsl:when test="$role-geo/graphml:data/y:ShapeNode/y:Geometry/@y!=''"><xsl:value-of select="$role-geo/graphml:data/y:ShapeNode/y:Geometry/@y"/></xsl:when>
+              <xsl:otherwise>455</xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+          <xsl:variable name="width">
+            <xsl:choose>
+              <xsl:when test="$role-geo/graphml:data/y:ShapeNode/y:Geometry/@width!=''"><xsl:value-of select="$role-geo/graphml:data/y:ShapeNode/y:Geometry/@width"/></xsl:when>
+              <xsl:otherwise>30</xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
           <node id="{@rdf:about|@rdf:nodeID}">
-            <data key="d3"/>
+            <data key="d3"><xsl:value-of select="$role-uri"/></data>
             <data key="d6">
               <y:ShapeNode>
-                <y:Geometry height="30" width="30" x="{$xpos}" y="455"/>
+                <xsl:choose>
+                  <xsl:when test="exists($role-geo/graphml:data/y:ShapeNode/y:Geometry)"><xsl:copy-of select="$role-geo/graphml:data/y:ShapeNode/y:Geometry"/></xsl:when>
+                  <xsl:otherwise><y:Geometry height="30" width="{$width}" x="{$xpos}" y="{$ypos}"/></xsl:otherwise>
+                </xsl:choose>
                 <y:Fill color="#FFCC00" transparent="false"/>
                 <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
                 <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:value-of select="rdfs:label"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -166,7 +209,7 @@
             <node id="{@rdf:about|@rdf:nodeID}-{$roleposition}">
               <data key="d6">
                 <y:ShapeNode>
-                  <y:Geometry height="2" width="30" x="{$xpos}" y="{455-position()*6}"/>
+                  <y:Geometry height="2" width="{$width}" x="{$xpos}" y="{$ypos - position()*6}"/>
                   <y:Fill color="#000000" transparent="false"/>
                   <y:BorderStyle hascolor="false" type="line" width="1.0"/>
                   <y:Shape type="rectangle"/>
@@ -180,11 +223,15 @@
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="node">
+  <xsl:variable name="node-geo" select="key('node-geo',@rdf:about|@rdf:nodeID)"/>
   <node id="{@rdf:about|@rdf:nodeID}">
-    <data key="d3"/>
+    <data key="d3"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></data>
     <data key="d6">
       <y:ShapeNode>
-        <y:Geometry height="30" width="30" x="{570+position()*30}" y="455"/>
+        <xsl:choose>
+          <xsl:when test="exists($node-geo/graphml:data/y:ShapeNode/y:Geometry)"><xsl:copy-of select="$node-geo/graphml:data/y:ShapeNode/y:Geometry"/></xsl:when>
+          <xsl:otherwise><y:Geometry height="30" width="30" x="570" y="455"/></xsl:otherwise>
+        </xsl:choose>
         <y:Fill color="#F5F5F5" transparent="false"/>
         <y:BorderStyle color="#000000" raised="false" type="dashed" width="1.0"/>
         <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="11.587890625" x="9.2060546875" xml:space="preserve" y="5.93359375"><xsl:apply-templates select="." mode="label"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
