@@ -19,6 +19,7 @@
 
 <xsl:key name="node-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
 <xsl:key name="role-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
+<xsl:key name="edge-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:edge" use="graphml:data[@key='d7']"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
@@ -257,10 +258,15 @@
       <xsl:otherwise>none</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+  <xsl:variable name="statement-uri"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></xsl:variable>
+  <xsl:variable name="statement-geo" select="key('edge-geo',$statement-uri)"/>
   <edge id="{@rdf:about|@rdf:nodeID}" source="{@rdf:about|@rdf:nodeID}" target="{fbm:playedBy/@rdf:resource}">
+    <data key="d7"><xsl:value-of select="$statement-uri"/></data>
+    <data key="d8"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></data>
     <data key="d10">
       <y:PolyLineEdge>
-        <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+        <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
+        <!-- <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/> -->
         <y:LineStyle color="#000000" type="line" width="1.0"/>
         <y:Arrows source="none" target="{$targetarrow}"/>
         <y:BendStyle smoothed="false"/>
@@ -270,10 +276,14 @@
 </xsl:template>
 
 <xsl:template match="fbm:subtypeOf" mode="subtype">
+  <xsl:variable name="statement-uri"><xsl:value-of select="../@rdf:about|@rdf:nodeID"/>.subtype</xsl:variable>
+  <xsl:variable name="statement-geo" select="key('edge-geo',$statement-uri)"/>
   <edge id="{../@rdf:about|@rdf:nodeID}.subtype" source="{../@rdf:about|@rdf:nodeID}" target="{@rdf:resource|@rdf:nodeID}">
+    <data key="d7"><xsl:value-of select="$statement-uri"/></data>
     <data key="d10">
       <y:PolyLineEdge>
-        <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+        <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
+        <!-- <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/> -->
         <y:LineStyle color="#000000" type="line" width="1.0"/>
         <y:Arrows source="none" target="white_delta"/>
         <y:BendStyle smoothed="false"/>
