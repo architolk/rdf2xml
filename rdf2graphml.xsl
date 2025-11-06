@@ -234,6 +234,9 @@
 <xsl:template match="rdf:Description" mode="logic-item">
   <xsl:param name="subject-uri"/>
   <!-- Three posibilities: (1) the list is a list of nodeshapes; (2) the list is a list of references to classes; (3) the list is a list of references to shacl nodes -->
+  <!-- For option (1) we need the nodeshape referenced the URI's in the list -->
+  <!-- For option (2) we need the nodeshape referenced by the sh:node object property in a blank node (not implemented yet) -->
+  <!-- For option 93) we need the nodeshape that targets the sh:node object property in a blank node -->
   <xsl:for-each select="key('resources',rdf:first/@rdf:resource)|key('nodeshapes',key('blanks',rdf:first/@rdf:nodeID)/sh:class/@rdf:resource)">
     <xsl:variable name="object-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
     <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
