@@ -159,11 +159,11 @@
 <xsl:template match="rdf:Description" mode="logic">
   <xsl:variable name="subject-uri" select="@rdf:about"/>
 	<xsl:variable name="subject-geo" select="key('node-geo',$subject-uri)"/>
-  <xsl:for-each select="key('resources',sh:property/(@rdf:resource|@rdf:nodeID))[exists(sh:node/@rdf:nodeID)]">
+  <xsl:for-each select="key('resources',sh:property/(@rdf:resource|@rdf:nodeID))[exists(sh:node/@rdf:nodeID) or exists(sh:xone|sh:or|sh:and|sh:not)]">
     <xsl:variable name="property" select="."/>
 		<xsl:variable name="pshape-uri" select="@rdf:about|@rdf:nodeID"/>
     <xsl:variable name="property-uri"><xsl:value-of select="@rdf:about|sh:path/@rdf:resource"/></xsl:variable>
-    <xsl:for-each select="key('blanks',sh:node/@rdf:nodeID)/(sh:xone|sh:or|sh:and|sh:not)|key('blanks',key('blanks',sh:node/@rdf:nodeID)/sh:property/@rdf:nodeID)[sh:path/@rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#type']/sh:in">
+    <xsl:for-each select="sh:xone|sh:or|sh:and|sh:not|key('blanks',sh:node/@rdf:nodeID)/(sh:xone|sh:or|sh:and|sh:not)|key('blanks',key('blanks',sh:node/@rdf:nodeID)/sh:property/@rdf:nodeID)[sh:path/@rdf:resource='http://www.w3.org/1999/02/22-rdf-syntax-ns#type']/sh:in">
       <xsl:variable name="logic"><xsl:value-of select="local-name()"/></xsl:variable>
       <!--<xsl:variable name="object-uri" select="../@rdf:nodeID"/>-->
 			<xsl:variable name="object-uri">urn:md5:<xsl:value-of select="concat($subject-uri,$pshape-uri,$logic)"/></xsl:variable>
@@ -233,8 +233,9 @@
 
 <xsl:template match="rdf:Description" mode="logic-item">
   <xsl:param name="subject-uri"/>
-  <xsl:for-each select="rdf:first[exists(key('resources',@rdf:resource))]">
-    <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
+  <!-- Three posibilities: (1) the list is a list of nodeshapes; (2) the list is a list of references to classes; (3) the list is a list of references to shacl nodes -->
+  <xsl:for-each select="key('resources',rdf:first/@rdf:resource)|key('nodeshapes',key('blanks',rdf:first/@rdf:nodeID)/sh:class/@rdf:resource)">
+    <xsl:variable name="object-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
     <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
     <xsl:variable name="property-uri">LOGIC</xsl:variable>
     <xsl:variable name="statement-uri">urn:md5:<xsl:value-of select="concat($subject-uri,$property-uri,$object-uri)"/></xsl:variable>
