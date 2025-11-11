@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmlns:thecustomprofile="http://www.sparxsystems.com/profiles/thecustomprofile/1.0"
+         xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+         xmlns:uml="http://schema.omg.org/spec/UML/2.1"
+         xmi:version="2.1">
+   <uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+      <packagedElement xmi:type="uml:Package" xmi:id="urn:name:package" name="Begrippen"
+                       visibility="public">
+         <packagedElement xmi:type="uml:Class" xmi:id="urn:fiets" name="Fiets" visibility="public">
+            <ownedAttribute xmi:type="uml:Property" xmi:id="urn:md5:urn:fietsskos:relatedurn:wiel:trgt"
+                            visibility="public"
+                            association="urn:md5:urn:fietsskos:relatedurn:wiel"
+                            isStatic="false"
+                            isReadOnly="false"
+                            isDerived="false"
+                            isOrdered="false"
+                            isUnique="true"
+                            isDerivedUnion="false"
+                            aggregation="none">
+               <type xmi:idref="urn:wiel"/>
+            </ownedAttribute>
+            <generalization xmi:type="uml:Generalization"
+                            xmi:id="urn:md5:urn:fietsskos:broaderurn:voertuig"
+                            general="urn:voertuig"/>
+         </packagedElement>
+         <packagedElement xmi:type="uml:Class" xmi:id="urn:voertuig" name="Voertuig" visibility="public"/>
+         <packagedElement xmi:type="uml:Class" xmi:id="urn:wiel" name="Wiel" visibility="public"/>
+         <packagedElement xmi:type="uml:Association" xmi:id="urn:md5:urn:fietsskos:relatedurn:wiel"
+                          name="skos:related"
+                          visibility="public">
+            <memberEnd xmi:idref="urn:md5:urn:fietsskos:relatedurn:wiel:trgt"/>
+            <memberEnd xmi:idref="urn:md5:urn:fietsskos:relatedurn:wiel:src"/>
+            <ownedEnd xmi:type="uml:Property" xmi:id="urn:md5:urn:fietsskos:relatedurn:wiel:src"
+                      visibility="public"
+                      association="urn:md5:urn:fietsskos:relatedurn:wiel"
+                      isStatic="false"
+                      isReadOnly="false"
+                      isDerived="false"
+                      isOrdered="false"
+                      isUnique="true"
+                      isDerivedUnion="false"
+                      aggregation="none">
+               <type xmi:idref="urn:fiets"/>
+            </ownedEnd>
+         </packagedElement>
+      </packagedElement>
+   </uml:Model>
+</xmi:XMI>
