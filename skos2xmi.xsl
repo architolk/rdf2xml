@@ -42,6 +42,9 @@
   </xsl:variable>
   <packagedElement xmi:type="uml:Class" xmi:id="{@rdf:about}" name="{$name}" visibility="public">
     <!-- Almost identical code at association -->
+    <xsl:for-each select="skos:definition">
+      <ownedComment xmi:id="{@rdf:about}-def{position()}" body="{.}"/>
+    </xsl:for-each>
     <xsl:for-each select="*/@rdf:resource">
       <xsl:variable name="target" select="."/>
       <xsl:variable name="association-name" select="../name()"/>
