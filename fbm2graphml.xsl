@@ -260,19 +260,21 @@
   </xsl:variable>
   <xsl:variable name="statement-uri"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></xsl:variable>
   <xsl:variable name="statement-geo" select="key('edge-geo',$statement-uri)"/>
-  <edge id="{@rdf:about|@rdf:nodeID}" source="{@rdf:about|@rdf:nodeID}" target="{fbm:playedBy/@rdf:resource}">
-    <data key="d7"><xsl:value-of select="$statement-uri"/></data>
-    <data key="d8"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></data>
-    <data key="d10">
-      <y:PolyLineEdge>
-        <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
-        <!-- <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/> -->
-        <y:LineStyle color="#000000" type="line" width="1.0"/>
-        <y:Arrows source="none" target="{$targetarrow}"/>
-        <y:BendStyle smoothed="false"/>
-      </y:PolyLineEdge>
-    </data>
-  </edge>
+  <xsl:if test="exists(key('resources',fbm:playedBy/@rdf:resource))">
+    <edge id="{@rdf:about|@rdf:nodeID}" source="{@rdf:about|@rdf:nodeID}" target="{fbm:playedBy/@rdf:resource}">
+      <data key="d7"><xsl:value-of select="$statement-uri"/></data>
+      <data key="d8"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></data>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
+          <!-- <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/> -->
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="{$targetarrow}"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="fbm:subtypeOf" mode="subtype">
