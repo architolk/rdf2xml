@@ -254,6 +254,7 @@
 <xsl:template match="rdf:Description" mode="edge">
   <xsl:variable name="targetarrow">
     <xsl:choose>
+      <xsl:when test="rdf:type/@rdf:resource='http://bp4mc2.org/def/fbm#SupertypeRole'">white_delta</xsl:when>
       <xsl:when test="exists(key('mandatoryrole',@rdf:about|@rdf:nonde))">circle</xsl:when>
       <xsl:otherwise>none</xsl:otherwise>
     </xsl:choose>
