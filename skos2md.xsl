@@ -42,7 +42,7 @@
 </xsl:template>
 
 <xsl:template match="*|@*|text()" mode="anchor">
-  <xsl:value-of select="replace(replace(lower-case(.),':',''),' ','-')"/>
+  <xsl:value-of select="replace(replace(replace(lower-case(.),':',''),' ','-'),'-[-]+','-')"/>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="link">
