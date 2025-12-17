@@ -85,7 +85,6 @@
 
 <xsl:template match="rdf:Description" mode="edge">
   <xsl:variable name="subject-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
-	<!--<xsl:for-each select="*[exists(key('items',@rdf:resource)) and local-name()!='inScheme' and local-name()!='grondslag']">-->
   <xsl:for-each select="*[exists(key('items',@rdf:resource)[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept'])]">
     <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
     <xsl:variable name="predicate-uri"><xsl:value-of select="namespace-uri()"/><xsl:value-of select="local-name()"/></xsl:variable>
@@ -101,9 +100,11 @@
               </xsl:choose>
             </xsl:variable>
             <xsl:variable name="statementlabel"><xsl:value-of select="key('statements',$subject-uri)[rdf:predicate/@rdf:resource=$predicate-uri and rdf:object/@rdf:resource=$object-uri]/rdfs:label"/></xsl:variable>
+            <xsl:variable name="propertylabel"><xsl:value-of select="key('resources',$predicate-uri)/rdfs:label"/></xsl:variable>
             <xsl:variable name="edgelabel">
               <xsl:choose>
                 <xsl:when test="$statementlabel!=''"><xsl:value-of select="$statementlabel"/></xsl:when>
+                <xsl:when test="$propertylabel!=''"><xsl:value-of select="$propertylabel"/></xsl:when>
                 <xsl:otherwise><xsl:value-of select="local-name()"/></xsl:otherwise>
               </xsl:choose>
             </xsl:variable>
