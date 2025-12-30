@@ -61,12 +61,12 @@
   </xsl:for-each>
 </xsl:template>
 
-<xsl:template match="rdf:Description" mode="concept-content">
+<xsl:template match="rdf:Description" mode="concept-row">
   <xsl:text>|</xsl:text>
-  <xsl:value-of select="rdfs:label"/>
+  <xsl:apply-templates select="." mode="link"/>
   <xsl:text>|</xsl:text>
   <xsl:apply-templates select="skos:definition" mode="definition"/>
-  <xsl:text>|</xsl:text>
+  <xsl:text>|&#xa;</xsl:text>
 </xsl:template>
 
 <xsl:template match="/">
