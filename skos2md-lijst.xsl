@@ -78,7 +78,7 @@
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:text>|Begrip|Definitie|&#xa;</xsl:text>
   <xsl:text>|------|---------|&#xa;</xsl:text>
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concep'"><xsl:sort select="rdfs:label"/>
+  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']"><xsl:sort select="rdfs:label"/>
     <xsl:apply-templates select="." mode="concept-row"/>
   </xsl:for-each>
 </xsl:template>
