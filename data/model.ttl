@@ -1,4 +1,5 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix owl: <http://www.w3.org/2002/07/owl#>.
@@ -23,6 +24,22 @@
     sh:node <urn:relklasse-shape>
   ];
   sh:property [
+    sh:path rdfs:isDefinedBy;
+    sh:name "rdfs:isDefinedBy";
+    sh:or (
+      [sh:class <urn:relklasse>]
+      [sh:class <urn:super>]
+    )
+  ];
+  sh:property [
+    sh:path rdfs:comment;
+    sh:name "rdfs:comment";
+    sh:xone (
+      [sh:datatype xsd:string]
+      [sh:datatype rdf:langString]
+    )
+  ];
+  sh:property [
     sh:path owl:sameAs;
     sh:name "owl:sameAs";
     sh:class <urn:relklasse>
@@ -40,7 +57,7 @@
   rdfs:label "Gerelateerde klasse";
 .
 <urn:relklasse-shape> a sh:NodeShape;
-  sh:targetClass <urn:relklasse>;
+  sh:targetClass <urn:relklasse2>;
   sh:name "urn:relshape";
   rdfs:label "Gerelateerde shape";
   sh:property <urn:relproperty-shape>
