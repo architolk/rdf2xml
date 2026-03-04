@@ -8,6 +8,7 @@
   xmlns:skosthes="http://purl.org/iso25964/skos-thes#"
   xmlns:dct="http://purl.org/dc/terms/"
   xmlns:skosxl="http://www.w3.org/2008/05/skos-xl#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
 >
 
 <xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
@@ -20,18 +21,26 @@
 
 <xsl:variable name="terms">
   <xsl:for-each select="/ROOT/rdf:RDF/rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']">
-    <xsl:variable name="term"><xsl:apply-templates select="rdfs:label" mode="anchor"/></xsl:variable>
+    <xsl:variable name="label"><xsl:apply-templates select="." mode="label"/></xsl:variable>
+    <xsl:variable name="term"><xsl:apply-templates select="$label" mode="anchor"/></xsl:variable>
     <term term="{$term}">
       <literal><xsl:value-of select="$term"/></literal>
-      <xsl:for-each select="key('items',key('terms',lower-case(rdfs:label))/skosxl:hiddenLabel/@rdf:resource)">
-        <xsl:variable name="literal"><xsl:apply-templates select="skosxl:literalForm" mode="anchor"/></xsl:variable>
+      <xsl:for-each-group select="skos:hiddenLabel|key('items',key('terms',lower-case($label))/skosxl:hiddenLabel/@rdf:resource)/skosxl:literalForm" group-by="lower-case(.)">
+        <xsl:variable name="literal"><xsl:apply-templates select="." mode="anchor"/></xsl:variable>
         <xsl:if test="$literal!=$term">
           <literal><xsl:value-of select="$literal"/></literal>
         </xsl:if>
-      </xsl:for-each>
+      </xsl:for-each-group>
     </term>
   </xsl:for-each>
 </xsl:variable>
+
+<xsl:template match="rdf:Description" mode="label">
+  <xsl:choose>
+    <xsl:when test="exists(skos:prefLabel[.!=''])"><xsl:value-of select="skos:prefLabel[.!=''][1]"/></xsl:when>
+    <xsl:otherwise><xsl:value-of select="rdfs:label[.!=''][1]"/></xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
 
 <xsl:template match="*" mode="liblink">
   <xsl:param name="informal"/>
@@ -46,11 +55,37 @@
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="link">
-  <xsl:text>[</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>]</xsl:text>
-  <xsl:text>(#</xsl:text><xsl:apply-templates select="rdfs:label" mode="anchor"/><xsl:text>)</xsl:text>
+  <xsl:variable name="label"><xsl:apply-templates select="." mode="label"/></xsl:variable>
+  <xsl:text>[</xsl:text><xsl:value-of select="$label"/><xsl:text>]</xsl:text>
+  <xsl:text>(#</xsl:text><xsl:apply-templates select="$label" mode="anchor"/><xsl:text>)</xsl:text>
 </xsl:template>
 
-<xsl:template match="*" mode="definition">
+<xsl:template match="rdf:Description" mode="definition">
+  <!-- This is an extension of the 'normal' definition and makes implicit references explicit -->
+  <xsl:variable name="relterms">
+    <xsl:for-each select="key('items',*/@rdf:resource)[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']">
+      <xsl:variable name="label"><xsl:apply-templates select="." mode="label"/></xsl:variable>
+      <xsl:variable name="anchor"><xsl:apply-templates select="$label" mode="anchor"/></xsl:variable>
+      <xsl:copy-of select="$terms/term[literal=$anchor]"/>
+    </xsl:for-each>
+  </xsl:variable>
+  <xsl:variable name="definition">
+    <xsl:for-each select="tokenize(skos:definition,' ')">
+      <xsl:if test="position()!=1"><xsl:text> </xsl:text></xsl:if>
+      <xsl:variable name="token"><xsl:value-of select="."/></xsl:variable>
+      <xsl:variable name="anchor"><xsl:apply-templates select="$token" mode="anchor"/></xsl:variable>
+      <xsl:choose>
+        <xsl:when test="exists($relterms/term[literal=$anchor])">
+          <xsl:text>[</xsl:text><xsl:value-of select="."/><xsl:text>]</xsl:text>
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:for-each>
+  </xsl:variable>
+  <xsl:apply-templates select="$definition" mode="definition-text"/>
+</xsl:template>
+
+<xsl:template match="*|text()" mode="definition-text">
   <xsl:for-each select="tokenize(.,'\[')">
     <xsl:variable name="token"><xsl:value-of select="substring-before(.,']')"/></xsl:variable>
     <xsl:variable name="anchor"><xsl:apply-templates select="$token" mode="anchor"/></xsl:variable>
@@ -72,7 +107,7 @@
 <xsl:template match="rdf:Description" mode="scheme-content">
   <xsl:param name="level">2</xsl:param>
   <xsl:value-of select="substring('######',1,$level)"/><xsl:text> </xsl:text>
-  <xsl:value-of select="rdfs:label"/>
+  <xsl:apply-templates select="." mode="label"/>
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:if test="rdfs:comment!=''">
     <xsl:value-of select="rdfs:comment"/>
@@ -83,10 +118,10 @@
     <xsl:text>&#xa;&#xa;</xsl:text>
   </xsl:if>
   <xsl:variable name="uri" select="@rdf:about"/>
-  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="rdfs:label"/>
+  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="scheme-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
   </xsl:for-each>
-  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="rdfs:label"/>
+  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="concept-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
   </xsl:for-each>
 </xsl:template>
@@ -105,7 +140,7 @@
     </xsl:when>
     <xsl:otherwise>
       <xsl:text>[</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>]</xsl:text>
-      <xsl:text>(</xsl:text><xsl:value-of select="dct:bibliographicCitation/@rdf:resource"/><xsl:text>)</xsl:text>
+      <xsl:text>(</xsl:text><xsl:value-of select="foaf:page/@rdf:resource|dct:bibliographicCitation/@rdf:resource"/><xsl:text>)</xsl:text>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -124,10 +159,10 @@
 <xsl:template match="rdf:Description" mode="concept-content">
   <xsl:param name="level">3</xsl:param>
   <xsl:value-of select="substring('######',1,$level)"/><xsl:text> </xsl:text>
-  <xsl:value-of select="rdfs:label"/>
+  <xsl:apply-templates select="." mode="label"/>
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:if test="rdf:type[@rdf:resource!='http://www.w3.org/2004/02/skos/core#Concept']/@rdf:resource!=''">
-    <xsl:text>*Een «</xsl:text><xsl:value-of select="rdfs:label"/><xsl:text>» is een </xsl:text>
+    <xsl:text>*Een «</xsl:text><xsl:apply-templates select="." mode="label"/><xsl:text>» is een </xsl:text>
     <xsl:value-of select="lower-case(substring-after(rdf:type[@rdf:resource!='http://www.w3.org/2004/02/skos/core#Concept']/@rdf:resource,'#'))"/>
     <xsl:text>.*&#xa;&#xa;</xsl:text>
   </xsl:if>
@@ -141,7 +176,7 @@
   </xsl:if>
   <xsl:if test="skos:definition!=''">
     <xsl:text>&gt; </xsl:text>
-    <xsl:apply-templates select="skos:definition" mode="definition"/>
+    <xsl:apply-templates select="." mode="definition"/>
     <xsl:text>&#xa;&#xa;</xsl:text>
   </xsl:if>
   <xsl:if test="skos:scopeNote!=''">
@@ -162,13 +197,29 @@
     <xsl:text>Bron: </xsl:text>
     <xsl:for-each select="dct:source">
       <xsl:if test="position()>1"><xsl:text>, </xsl:text></xsl:if>
-      <xsl:apply-templates select="key('items',@rdf:resource)" mode="source-label"/>
+      <xsl:apply-templates select="key('items',@rdf:resource|@rdf:nodeID)" mode="source-label"/>
+    </xsl:for-each>
+    <xsl:text>&#xa;&#xa;</xsl:text>
+  </xsl:if>
+  <xsl:if test="exists(skos:broader)">
+    <xsl:text>Bovenliggend begrip: </xsl:text>
+    <xsl:for-each select="skos:broader">
+      <xsl:if test="position()>1"><xsl:text>, </xsl:text></xsl:if>
+      <xsl:apply-templates select="key('items',@rdf:resource)" mode="link"/>
     </xsl:for-each>
     <xsl:text>&#xa;&#xa;</xsl:text>
   </xsl:if>
   <xsl:if test="exists(skosthes:broaderGeneric)">
     <xsl:text>Specialisatie van: </xsl:text>
     <xsl:for-each select="skosthes:broaderGeneric">
+      <xsl:if test="position()>1"><xsl:text>, </xsl:text></xsl:if>
+      <xsl:apply-templates select="key('items',@rdf:resource)" mode="link"/>
+    </xsl:for-each>
+    <xsl:text>&#xa;&#xa;</xsl:text>
+  </xsl:if>
+  <xsl:if test="exists(skos:narrower)">
+    <xsl:text>Onderliggend begrip: </xsl:text>
+    <xsl:for-each select="skos:narrower">
       <xsl:if test="position()>1"><xsl:text>, </xsl:text></xsl:if>
       <xsl:apply-templates select="key('items',@rdf:resource)" mode="link"/>
     </xsl:for-each>
@@ -223,7 +274,7 @@
 
 <xsl:template match="rdf:Description" mode="collection-toc">
   <xsl:text>## </xsl:text>
-  <xsl:value-of select="rdfs:label"/>
+  <xsl:apply-templates select="." mode="label"/>
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:if test="rdfs:comment!=''">
     <xsl:value-of select="rdfs:comment"/>
@@ -234,7 +285,7 @@
 
 <xsl:template match="rdf:Description" mode="collection-content">
   <xsl:text>### </xsl:text>
-  <xsl:value-of select="rdfs:label"/>
+  <xsl:apply-templates select="." mode="label"/>
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:if test="rdfs:comment!=''">
     <xsl:value-of select="rdfs:comment"/>
@@ -251,9 +302,9 @@
   </xsl:if>
   <xsl:if test="exists(skos:member)">
     <xsl:text>Deze lijst bestaat uit de volgende elementen:&#xa;</xsl:text>
-    <xsl:for-each select="key('items',skos:member/@rdf:resource)"><xsl:sort select="rdfs:label"/>
+    <xsl:for-each select="key('items',skos:member/@rdf:resource)"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
       <xsl:text>- </xsl:text>
-      <xsl:value-of select="rdfs:label"/>
+      <xsl:apply-templates select="." mode="label"/>
       <xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
     <xsl:text>&#xa;</xsl:text>
@@ -262,7 +313,7 @@
 
 <xsl:template match="rdf:Description" mode="conformance">
   <xsl:text>## </xsl:text>
-  <xsl:value-of select="rdfs:label"/>
+  <xsl:apply-templates select="." mode="label"/>
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:if test="rdfs:comment!=''">
     <xsl:value-of select="rdfs:comment"/>
@@ -270,7 +321,7 @@
   </xsl:if>
   <xsl:text>|Begrip|Conformance|Referentie|Standaard|&#xa;</xsl:text>
   <xsl:text>|------|-|-|---------|&#xa;</xsl:text>
-  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and exists(skos:exactMatch|skos:closeMatch|skos:broadMatch)]"><xsl:sort select="rdfs:label"/>
+  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and exists(skos:exactMatch|skos:closeMatch|skos:broadMatch)]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="conformance-statement"/>
   </xsl:for-each>
 </xsl:template>
@@ -308,10 +359,10 @@
   <xsl:text>![](begrippenmodel.svg "begrippenmodel")</xsl:text>
   -->
   <xsl:text>&#xa;&#xa;</xsl:text>
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and not(exists(skos:inScheme))]"><xsl:sort select="rdfs:label"/>
+  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and not(exists(skos:inScheme))]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="scheme-content"/>
   </xsl:for-each>
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#OrderedCollection']"><xsl:sort select="rdfs:label"/>
+  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#OrderedCollection']"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="collection-toc"/>
   </xsl:for-each>
   <!-- A bit of a hack to use prov:Entity and a dct:identifier... -->
