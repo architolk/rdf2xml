@@ -125,7 +125,7 @@
   <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Collection' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="collection-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
   </xsl:for-each>
-  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and skos:inScheme/@rdf:resource=$uri and not(exists(key('member',@rdf:about)))]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
+  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and skos:inScheme/@rdf:resource=$uri and not(exists(key('member',@rdf:about)[skos:inScheme/@rdf:resource=$uri]))]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="concept-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
   </xsl:for-each>
 </xsl:template>
