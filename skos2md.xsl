@@ -14,6 +14,7 @@
 <xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
 <xsl:key name="bnodes" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
 <xsl:key name="terms" match="/ROOT/rdf:RDF/rdf:Description[skosxl:literalForm!='']" use="lower-case(skosxl:literalForm)"/>
+<xsl:key name="member" match="/ROOT/rdf:RDF/rdf:Description" use="skos:member/@rdf:resource"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 
@@ -121,7 +122,29 @@
   <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="scheme-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
   </xsl:for-each>
-  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
+  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Collection' and skos:inScheme/@rdf:resource=$uri]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
+    <xsl:apply-templates select="." mode="collection-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
+  </xsl:for-each>
+  <xsl:for-each select="../rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept' and skos:inScheme/@rdf:resource=$uri and not(exists(key('member',@rdf:about)))]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
+    <xsl:apply-templates select="." mode="concept-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="collection-content">
+  <xsl:param name="level">3</xsl:param>
+  <xsl:value-of select="substring('######',1,$level)"/><xsl:text> </xsl:text>
+  <xsl:apply-templates select="." mode="label"/>
+  <xsl:text>&#xa;&#xa;</xsl:text>
+  <xsl:if test="rdfs:comment!=''">
+    <xsl:value-of select="rdfs:comment"/>
+    <xsl:text>&#xa;&#xa;</xsl:text>
+  </xsl:if>
+  <xsl:if test="skos:editorialNote!=''">
+    <xsl:text>*</xsl:text><xsl:value-of select="skos:editorialNote"/><xsl:text>*</xsl:text>
+    <xsl:text>&#xa;&#xa;</xsl:text>
+  </xsl:if>
+  <xsl:variable name="uri" select="@rdf:about"/>
+  <xsl:for-each select="key('items',skos:member/@rdf:resource)"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="concept-content"><xsl:with-param name="level" select="$level+1"/></xsl:apply-templates>
   </xsl:for-each>
 </xsl:template>
@@ -268,7 +291,7 @@
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="collection-toc-rec">
-  <xsl:apply-templates select="key('items',rdf:first/@rdf:resource)" mode="collection-content"/>
+  <xsl:apply-templates select="key('items',rdf:first/@rdf:resource)" mode="collection-content-list"/>
   <xsl:apply-templates select="key('bnodes',rdf:rest/@rdf:nodeID)" mode="collection-toc-rec"/>
 </xsl:template>
 
@@ -283,7 +306,7 @@
   <xsl:apply-templates select="key('bnodes',skos:memberList/@rdf:nodeID)" mode="collection-toc-rec"/>
 </xsl:template>
 
-<xsl:template match="rdf:Description" mode="collection-content">
+<xsl:template match="rdf:Description" mode="collection-content-list">
   <xsl:text>### </xsl:text>
   <xsl:apply-templates select="." mode="label"/>
   <xsl:text>&#xa;&#xa;</xsl:text>
