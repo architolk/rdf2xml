@@ -5,6 +5,7 @@
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
   xmlns:sh="http://www.w3.org/ns/shacl#"
   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:dct="http://purl.org/dc/terms/"
   xmlns:graphml="http://graphml.graphdrawing.org/xmlns"
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
@@ -41,6 +42,13 @@
   </xsl:choose>
 </xsl:template>
 
+<xsl:template match="rdf:Description" mode="sources">
+  <xsl:for-each select="key('items',dct:source/@rdf:resource)">
+    <xsl:if test="position()!=1">; </xsl:if>
+    <xsl:apply-templates select="." mode="label"/>
+  </xsl:for-each>
+</xsl:template>
+
 <xsl:template match="/">
 	<graphml>
 		<key attr.name="url" attr.type="string" for="node" id="d3"/>
@@ -71,11 +79,14 @@
           </xsl:choose>
   				<y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
   				<y:BorderStyle color="#000000" type="line" width="1.0"/>
-  				<y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#B7C9E3" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="44.25390625" x="17.873046875" y="4.0">
+  				<y:NodeLabel alignment="center" autoSizePolicy="node_width" backgroundColor="#B7C9E3" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="44.25390625" x="17.873046875" y="4.0">
   					<xsl:apply-templates select="." mode="label"/>
   				</y:NodeLabel>
   				<y:NodeLabel alignment="left" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="top" visible="true" width="65.541015625" x="2.0" y="30.1328125">
-            <xsl:apply-templates select="." mode="definition"/>
+            <xsl:choose>
+              <xsl:when test="$params='sources'"><xsl:apply-templates select="." mode="sources"/></xsl:when>
+              <xsl:otherwise><xsl:apply-templates select="." mode="definition"/></xsl:otherwise>
+            </xsl:choose>
             <y:LabelModel><y:ErdAttributesNodeLabelModel/></y:LabelModel><y:ModelParameter><y:ErdAttributesNodeLabelModelParameter/></y:ModelParameter>
           </y:NodeLabel>
   			</y:GenericNode>
@@ -115,12 +126,14 @@
               </xsl:choose>
             </xsl:variable>
             <y:Arrows source="none" target="{$endarrow}"/>
-            <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="{$fontstyle}" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
-                <xsl:value-of select="$edgelabel"/><y:LabelModel>
-                <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
-              <y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter>
-              <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-            </y:EdgeLabel>
+            <xsl:if test="not($params='sources')">
+              <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="{$fontstyle}" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
+                  <xsl:value-of select="$edgelabel"/><y:LabelModel>
+                  <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
+                <y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter>
+                <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+              </y:EdgeLabel>
+            </xsl:if>
             <y:BendStyle smoothed="false"/>
           </y:PolyLineEdge>
         </data>
