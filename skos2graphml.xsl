@@ -17,6 +17,11 @@
 <xsl:key name="edge-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:edge" use="graphml:data[@key='d7']"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
+<!-- Posible values for params:
+     - ext: visualisation extension with semantic arrows
+     - taxonomy: only taxonomy relations
+     - sources: display sources instead of definition
+-->
 
 <xsl:template match="rdf:Description" mode="label">
   <xsl:variable name="slabel"><xsl:value-of select="replace(@rdf:about|@rdf:nodeID,'^.*(#|/)([^(#|/)]+)$','$2')"/></xsl:variable>
