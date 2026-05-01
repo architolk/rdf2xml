@@ -62,19 +62,21 @@
       <xsl:apply-templates select="(sh:class|sh:node)" mode="label"/>
     </xsl:if>
   </xsl:if>
-  <xsl:variable name="mincount">
-    <xsl:choose>
-      <xsl:when test="sh:minCount>0"><xsl:value-of select="sh:minCount"/></xsl:when>
-      <xsl:otherwise>0</xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-  <xsl:variable name="maxcount">
-    <xsl:choose>
-      <xsl:when test="sh:maxCount>0"><xsl:value-of select="sh:maxCount"/></xsl:when>
-      <xsl:otherwise>n</xsl:otherwise>
-    </xsl:choose>
-  </xsl:variable>
-  <xsl:text> [</xsl:text><xsl:value-of select="$mincount"/><xsl:text>,</xsl:text><xsl:value-of select="$maxcount"/><xsl:text>]</xsl:text>
+  <xsl:if test="$params!='nocard'">
+    <xsl:variable name="mincount">
+      <xsl:choose>
+        <xsl:when test="sh:minCount>0"><xsl:value-of select="sh:minCount"/></xsl:when>
+        <xsl:otherwise>0</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="maxcount">
+      <xsl:choose>
+        <xsl:when test="sh:maxCount>0"><xsl:value-of select="sh:maxCount"/></xsl:when>
+        <xsl:otherwise>n</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:text> [</xsl:text><xsl:value-of select="$mincount"/><xsl:text>,</xsl:text><xsl:value-of select="$maxcount"/><xsl:text>]</xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="/">
@@ -136,9 +138,21 @@
 								<xsl:value-of select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))/sh:hasValue/@rdf:resource"/>
 							</xsl:if>
 						</xsl:variable>
+            <xsl:variable name="collection">
+              <xsl:if test="key('resources',key('resources',sh:property/(@rdf:nodeID|@rdf:resource))/sh:path/@rdf:nodeID)/sh:inversePath/@rdf:resource='http://www.w3.org/2004/02/skos/core#member'">
+                <xsl:value-of select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))/sh:hasValue/@rdf:resource"/>
+              </xsl:if>
+            </xsl:variable>
 						<xsl:choose>
 							<xsl:when test="$scheme!=''">
 								<xsl:for-each select="../rdf:Description[skos:inScheme/@rdf:resource=$scheme]">
+									<xsl:if test="position()!=1"><xsl:text>
+</xsl:text></xsl:if>
+	                <xsl:text>- </xsl:text><xsl:apply-templates select="." mode="label"/>
+								</xsl:for-each>
+							</xsl:when>
+              <xsl:when test="$collection!=''">
+								<xsl:for-each select="key('resources',key('resources',$collection)/skos:member/@rdf:resource)">
 									<xsl:if test="position()!=1"><xsl:text>
 </xsl:text></xsl:if>
 	                <xsl:text>- </xsl:text><xsl:apply-templates select="." mode="label"/>
