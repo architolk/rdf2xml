@@ -34,3 +34,10 @@ Usage:
 ```
 java -jar rdf2xml -xml <input.xml> <output.xml> <stylesheet.xsl>
 ```
+
+## MD5 utility
+The library includes functionality to use md5 hashes in XSL stylesheets. For example:
+
+```
+<xsl:value-of xmlns:Utils="nl.architolk.rdf2xml.Utils" select="Utils:md5(rdfs:label)"/></xsl:when>
+```
