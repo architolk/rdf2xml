@@ -5,22 +5,31 @@
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
   xmlns:sh="http://www.w3.org/ns/shacl#"
   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:odrl="http://www.w3.org/ns/odrl/2/"
   xmlns:dct="http://purl.org/dc/terms/"
   xmlns:graphml="http://graphml.graphdrawing.org/xmlns"
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
+<xsl:output indent="yes"/>
+
+<xsl:variable name="skos-concept">http://www.w3.org/2004/02/skos/core#Concept</xsl:variable>
 
 <xsl:key name="items" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about"/>
 <xsl:key name="resources" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
 <xsl:key name="statements" match="/ROOT/rdf:RDF/rdf:Description" use="rdf:subject/@rdf:resource"/>
 <xsl:key name="node-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:node" use="graphml:data[@key='d3']"/>
 <xsl:key name="edge-geo" match="/ROOT/graphml:graphml/graphml:graph/graphml:edge" use="graphml:data[@key='d7']"/>
+<xsl:key name="concepts" match="/ROOT/rdf:RDF/rdf:Description[rdfs:subClassOf/@rdf:resource=$skos-concept]" use="@rdf:about"/>
+<xsl:key name="constraints" match="/ROOT/rdf:RDF/rdf:Description[@rdf:about='http://www.w3.org/ns/odrl/2/Constraint' or rdfs:subClassOf/@rdf:resource='http://www.w3.org/ns/odrl/2/Constraint']" use="@rdf:about"/>
+<xsl:key name="operators" match="/ROOT/rdf:RDF/rdf:Description[@rdf:about='http://www.w3.org/ns/odrl/2/Operator' or rdfs:subClassOf/@rdf:resource='http://www.w3.org/ns/odrl/2/Operator']" use="@rdf:about"/>
 
 <xsl:variable name="params" select="/ROOT/@params"/>
 <!-- Posible values for params:
      - ext: visualisation extension with semantic arrows
      - taxonomy: only taxonomy relations
      - sources: display sources instead of definition
+     - sources-strict: display sources instead of definition AND ommit labels on edges
+     - mixed: display comments, definitions and sources, depending on the availability
 -->
 
 <xsl:template match="rdf:Description" mode="label">
@@ -36,14 +45,6 @@
   <xsl:choose>
     <xsl:when test="exists(key('resources',@rdf:resource|rdf:nodeID))"><xsl:apply-templates select="key('resources',@rdf:resource|rdf:nodeID)" mode="label"/></xsl:when>
     <xsl:otherwise><xsl:value-of select="replace(@rdf:resource|@rdf:nodeID,'^.*(#|/)([^(#|/)]+)$','$2')"/></xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<xsl:template match="rdf:Description" mode="definition">
-  <xsl:choose>
-    <xsl:when test="skos:definition!=''"><xsl:value-of select="skos:definition"/></xsl:when>
-    <xsl:when test="rdfs:comment!=''"><xsl:value-of select="rdfs:comment"/></xsl:when>
-    <xsl:otherwise />
   </xsl:choose>
 </xsl:template>
 
@@ -68,11 +69,77 @@
 </xsl:template>
 
 <xsl:template match="rdf:RDF">
-  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']" mode="node"/>
-  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept']" mode="edge"/>
+  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource=$skos-concept or exists(key('concepts',rdf:type/@rdf:resource))]" mode="node-concept"/>
+  <xsl:apply-templates select="rdf:Description[exists(key('constraints',rdf:type/@rdf:resource))]" mode="node-constraint"/>
+  <xsl:apply-templates select="rdf:Description[exists(key('operators',rdf:type/@rdf:resource))]" mode="node-operator"/>
+  <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource=$skos-concept or exists(key('concepts',rdf:type/@rdf:resource))]" mode="edge"/>
+  <xsl:apply-templates select="rdf:Description[exists(key('constraints',rdf:type/@rdf:resource))]" mode="edge"/>
+  <xsl:apply-templates select="rdf:Description[exists(key('operators',rdf:type/@rdf:resource))]" mode="edge"/>
 </xsl:template>
 
-<xsl:template match="rdf:Description" mode="node">
+<xsl:template match="rdf:Description" mode="node-operator">
+  <xsl:variable name="subject-uri">
+    <xsl:choose>
+      <xsl:when test="@rdf:about!=''"><xsl:value-of select="@rdf:about"/></xsl:when>
+      <xsl:when test="rdfs:label!=''">#<xsl:value-of xmlns:Utils="nl.architolk.rdf2xml.Utils" select="Utils:md5(rdfs:label)"/></xsl:when>
+      <xsl:otherwise><xsl:value-of select="@rdf:nodeID"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <node id="{@rdf:about|@rdf:nodeID}">
+    <data key="d3"><xsl:value-of select="$subject-uri"/></data>
+    <data key="d6">
+      <y:ShapeNode>
+        <xsl:variable name="geo" select="key('node-geo',$subject-uri)"/>
+        <xsl:choose>
+          <xsl:when test="exists($geo/graphml:data/y:ShapeNode/y:Geometry)"><xsl:copy-of select="$geo/graphml:data/y:ShapeNode/y:Geometry"/></xsl:when>
+          <xsl:otherwise><y:Geometry height="45.0" width="216.0" x="345.0" y="253.0"/></xsl:otherwise>
+        </xsl:choose>
+        <y:Fill color="#DDFFDD" transparent="false"/>
+        <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+        <xsl:variable name="sources"><xsl:apply-templates select="." mode="sources"/></xsl:variable>
+        <xsl:variable name="content">
+          <xsl:value-of select="rdfs:label"/>
+          <xsl:if test="($params='sources' or $params='sources-strict' or $params='mixed') and $sources!=''"> (<xsl:value-of select="$sources"/>)</xsl:if>
+        </xsl:variable>
+        <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="39.9765625" x="31.51171875" xml:space="preserve" y="5.93359375"><xsl:value-of select="$content"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+        <y:Shape type="ellipse"/>
+      </y:ShapeNode>
+    </data>
+  </node>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="node-constraint">
+  <xsl:variable name="subject-uri">
+    <xsl:choose>
+      <xsl:when test="@rdf:about!=''"><xsl:value-of select="@rdf:about"/></xsl:when>
+      <xsl:when test="rdfs:label!=''">#<xsl:value-of xmlns:Utils="nl.architolk.rdf2xml.Utils" select="Utils:md5(rdfs:label)"/></xsl:when>
+      <xsl:otherwise><xsl:value-of select="@rdf:nodeID"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <node id="{@rdf:about|@rdf:nodeID}">
+    <data key="d3"><xsl:value-of select="$subject-uri"/></data>
+    <data key="d6">
+      <y:ShapeNode>
+        <xsl:variable name="geo" select="key('node-geo',$subject-uri)"/>
+        <xsl:choose>
+          <xsl:when test="exists($geo/graphml:data/y:ShapeNode/y:Geometry)"><xsl:copy-of select="$geo/graphml:data/y:ShapeNode/y:Geometry"/></xsl:when>
+          <xsl:otherwise><y:Geometry height="45.0" width="216.0" x="345.0" y="253.0"/></xsl:otherwise>
+        </xsl:choose>
+        <y:Fill color="#DDFFDD" transparent="false"/>
+        <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
+        <xsl:variable name="sources"><xsl:apply-templates select="." mode="sources"/></xsl:variable>
+        <xsl:variable name="content">
+          <xsl:value-of select="rdfs:label"/>
+          <xsl:if test="($params='sources' or $params='sources-strict' or $params='mixed') and $sources!=''"> (<xsl:value-of select="$sources"/>)</xsl:if>
+        </xsl:variable>
+        <y:NodeLabel alignment="left" autoSizePolicy="node_width" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="20.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="216.0" x="0.0" xml:space="preserve" y="12.43359375"><xsl:value-of select="$content"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+        <y:Shape type="rectangle"/>
+      </y:ShapeNode>
+    </data>
+  </node>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="node-concept">
     <node id="{@rdf:about}">
   		<data key="d3"><xsl:value-of select="@rdf:about"/></data>
   		<data key="d6">
@@ -88,9 +155,15 @@
   					<xsl:apply-templates select="." mode="label"/>
   				</y:NodeLabel>
   				<y:NodeLabel alignment="left" autoSizePolicy="node_size" configuration="CroppingLabel" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="top" visible="true" width="65.541015625" x="2.0" y="30.1328125">
+            <xsl:variable name="sources"><xsl:apply-templates select="." mode="sources"/></xsl:variable>
             <xsl:choose>
-              <xsl:when test="$params='sources'"><xsl:apply-templates select="." mode="sources"/></xsl:when>
-              <xsl:otherwise><xsl:apply-templates select="." mode="definition"/></xsl:otherwise>
+              <xsl:when test="$params='sources' or $params='sources-strict'"><xsl:apply-templates select="." mode="sources"/></xsl:when>
+              <xsl:when test="$params='mixed' and not(skos:definition!='' or rdfs:comment!='')"><xsl:apply-templates select="." mode="sources"/></xsl:when>
+              <xsl:when test="skos:definition!=''">
+                <xsl:value-of select="skos:definition"/>
+                <xsl:if test="($params='sources' or $params='sources-strict' or $params='mixed') and $sources!=''">&#xa;(<xsl:value-of select="$sources"/>)</xsl:if>
+              </xsl:when>
+              <xsl:otherwise><xsl:value-of select="rdfs:comment"/></xsl:otherwise>
             </xsl:choose>
             <y:LabelModel><y:ErdAttributesNodeLabelModel/></y:LabelModel><y:ModelParameter><y:ErdAttributesNodeLabelModelParameter/></y:ModelParameter>
           </y:NodeLabel>
@@ -100,14 +173,18 @@
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="edge">
-  <xsl:variable name="subject-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
-  <xsl:for-each select="*[exists(key('items',@rdf:resource)[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#Concept'])]">
-    <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource"/></xsl:variable>
+  <xsl:variable name="subject-uri"><xsl:value-of select="@rdf:about|@rdf:nodeID"/></xsl:variable>
+  <xsl:for-each select="*[exists(key('resources',@rdf:resource)[rdf:type/@rdf:resource=$skos-concept]) or exists(key('concepts',key('resources',@rdf:resource|@rdf:nodeID)/rdf:type/@rdf:resource)) or exists(key('constraints',key('resources',@rdf:resource|@rdf:nodeID)/rdf:type/@rdf:resource)) or exists(key('operators',key('resources',@rdf:resource|@rdf:nodeID)/rdf:type/@rdf:resource))]">
+    <xsl:variable name="object-uri"><xsl:value-of select="@rdf:resource|@rdf:nodeID"/></xsl:variable>
     <xsl:variable name="predicate-uri"><xsl:value-of select="namespace-uri()"/><xsl:value-of select="local-name()"/></xsl:variable>
+    <xsl:variable name="statement-uri">urn:md5:<xsl:value-of select="concat($subject-uri,$predicate-uri,$object-uri)"/></xsl:variable>
+    <xsl:variable name="statement-geo" select="key('edge-geo',$statement-uri)"/>
     <xsl:if test="not($params='taxonomy') or local-name()='broader' or local-name()='narrower' or local-name()='broaderGeneric' or local-name()='broaderPartitive' or local-name()='narrowerPartitive' or local-name()='narrowerGeneric'">
       <edge source="{$subject-uri}" target="{$object-uri}">
+        <data key="d7"><xsl:value-of select="$statement-uri"/></data>
         <data key="d10">
           <y:PolyLineEdge>
+            <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
             <y:LineStyle color="#000000" type="line" width="1.0"/>
             <xsl:variable name="endarrow">
               <xsl:choose>
@@ -131,7 +208,7 @@
               </xsl:choose>
             </xsl:variable>
             <y:Arrows source="none" target="{$endarrow}"/>
-            <xsl:if test="not($params='sources')">
+            <xsl:if test="not($params='sources-strict')">
               <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="{$fontstyle}" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
                   <xsl:value-of select="$edgelabel"/><y:LabelModel>
                   <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
