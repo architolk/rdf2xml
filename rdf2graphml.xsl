@@ -62,7 +62,7 @@
       <xsl:apply-templates select="(sh:class|sh:node)" mode="label"/>
     </xsl:if>
   </xsl:if>
-  <xsl:if test="$params!='nocard'">
+  <xsl:if test="not($params='nocard')">
     <xsl:variable name="mincount">
       <xsl:choose>
         <xsl:when test="sh:minCount>0"><xsl:value-of select="sh:minCount"/></xsl:when>
@@ -297,47 +297,50 @@
   <xsl:if test="not($params='follow') or exists($subject-geo/graphml:data)">
     <!-- Associations -->
     <xsl:for-each select="key('resources',sh:property/(@rdf:nodeID|@rdf:resource))[exists(key('nodeshapes',(sh:node|sh:class)/@rdf:resource))]">
-      <xsl:variable name="object-uri"><xsl:value-of select="key('nodeshapes',(sh:node|sh:class)/@rdf:resource)/@rdf:about"/></xsl:variable>
-      <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
       <xsl:variable name="property-uri"><xsl:value-of select="@rdf:about|sh:path/@rdf:resource"/></xsl:variable>
-      <xsl:variable name="statement-uri">urn:md5:<xsl:value-of select="concat($subject-uri,$property-uri,$object-uri)"/></xsl:variable>
-      <xsl:variable name="statement-geo" select="key('edge-geo',$statement-uri)"/>
-      <xsl:if test="not($params='follow') or exists($object-geo/graphml:data)">
-        <edge source="{$subject-uri}" target="{$object-uri}">
-          <data key="d7"><xsl:value-of select="$statement-uri"/></data>
-          <data key="d8"><xsl:value-of select="$property-uri"/></data>
-    			<data key="d10">
-    				<y:PolyLineEdge>
-              <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
-              <xsl:choose>
-                <xsl:when test="exists($statement-geo/graphml:data/y:PolyLineEdge/y:LineStyle)"><xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:LineStyle"/></xsl:when>
-                <xsl:otherwise><y:LineStyle color="#000000" type="line" width="1.0"/></xsl:otherwise>
-              </xsl:choose>
-              <xsl:variable name="sourcearrow">
-                  <xsl:choose>
-                    <xsl:when test="sh:nodeKind/@rdf:resource='http://www.w3.org/ns/shacl#BlankNode'">diamond</xsl:when>
-                    <xsl:otherwise>none</xsl:otherwise>
-                  </xsl:choose>
-              </xsl:variable>
-    					<y:Arrows source="{$sourcearrow}" target="standard"/>
-    					<y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
-                  <xsl:for-each select="$statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel[1]">
-                    <xsl:attribute name="x" select="@x"/>
-                    <xsl:attribute name="y" select="@y"/>
-                  </xsl:for-each>
-                  <xsl:apply-templates select="." mode="property-label"/><y:LabelModel>
-                  <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
+      <xsl:variable name="sourcearrow">
+          <xsl:choose>
+            <xsl:when test="sh:nodeKind/@rdf:resource='http://www.w3.org/ns/shacl#BlankNode'">diamond</xsl:when>
+            <xsl:otherwise>none</xsl:otherwise>
+          </xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="property-label"><xsl:apply-templates select="." mode="property-label"/></xsl:variable>
+      <xsl:for-each select="key('nodeshapes',(sh:node|sh:class)/@rdf:resource)">
+        <xsl:variable name="object-uri"><xsl:value-of select="@rdf:about"/></xsl:variable>
+        <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
+        <xsl:variable name="statement-uri">urn:md5:<xsl:value-of select="concat($subject-uri,$property-uri,$object-uri)"/></xsl:variable>
+        <xsl:variable name="statement-geo" select="key('edge-geo',$statement-uri)"/>
+        <xsl:if test="not($params='follow') or exists($object-geo/graphml:data)">
+          <edge source="{$subject-uri}" target="{$object-uri}">
+            <data key="d7"><xsl:value-of select="$statement-uri"/></data>
+            <data key="d8"><xsl:value-of select="$property-uri"/></data>
+      			<data key="d10">
+      				<y:PolyLineEdge>
+                <xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:Path"/>
                 <xsl:choose>
-                  <xsl:when test="exists($statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel/y:ModelParameter)"><xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel/y:ModelParameter"/></xsl:when>
-                  <xsl:otherwise><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter></xsl:otherwise>
+                  <xsl:when test="exists($statement-geo/graphml:data/y:PolyLineEdge/y:LineStyle)"><xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:LineStyle"/></xsl:when>
+                  <xsl:otherwise><y:LineStyle color="#000000" type="line" width="1.0"/></xsl:otherwise>
                 </xsl:choose>
-    						<y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
-    					</y:EdgeLabel>
-    					<y:BendStyle smoothed="false"/>
-    				</y:PolyLineEdge>
-    			</data>
-    		</edge>
-      </xsl:if>
+      					<y:Arrows source="{$sourcearrow}" target="standard"/>
+      					<y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true">
+                    <xsl:for-each select="$statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel[1]">
+                      <xsl:attribute name="x" select="@x"/>
+                      <xsl:attribute name="y" select="@y"/>
+                    </xsl:for-each>
+                    <xsl:value-of select="$property-label"/><y:LabelModel>
+                    <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
+                  <xsl:choose>
+                    <xsl:when test="exists($statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel/y:ModelParameter)"><xsl:copy-of select="$statement-geo/graphml:data/y:PolyLineEdge/y:EdgeLabel/y:ModelParameter"/></xsl:when>
+                    <xsl:otherwise><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter></xsl:otherwise>
+                  </xsl:choose>
+      						<y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+      					</y:EdgeLabel>
+      					<y:BendStyle smoothed="false"/>
+      				</y:PolyLineEdge>
+      			</data>
+      		</edge>
+        </xsl:if>
+      </xsl:for-each>
     </xsl:for-each>
   </xsl:if>
 </xsl:template>
