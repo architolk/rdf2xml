@@ -377,10 +377,10 @@
 
 <xsl:template match="rdf:RDF">
   <xsl:text># Begrippen</xsl:text>
-  <!-- TODO: Make this a configuration option
-  <xsl:text>&#xa;&#xa;</xsl:text>
-  <xsl:text>![](begrippenmodel.svg "begrippenmodel")</xsl:text>
-  -->
+  <xsl:if test="$params='diagram'">
+    <xsl:text>&#xa;&#xa;</xsl:text>
+    <xsl:text>![](begrippenmodel.svg "begrippenmodel")</xsl:text>
+  </xsl:if>
   <xsl:text>&#xa;&#xa;</xsl:text>
   <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2004/02/skos/core#ConceptScheme' and not(exists(skos:inScheme))]"><xsl:sort select="skos:prefLabel[1]"/><xsl:sort select="rdfs:label[1]"/>
     <xsl:apply-templates select="." mode="scheme-content"/>
