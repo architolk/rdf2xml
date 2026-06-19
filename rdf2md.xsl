@@ -22,6 +22,13 @@
   </xsl:choose>
 </xsl:variable>
 
+<xsl:variable name="doctype">
+  <xsl:choose>
+    <xsl:when test="exists(rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class'])">ontology</xsl:when>
+    <xsl:otherwise>profile</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
 <xsl:key name="resource" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:about|@rdf:nodeID"/>
 <xsl:key name="blank" match="/ROOT/rdf:RDF/rdf:Description" use="@rdf:nodeID"/>
 <xsl:key name="nshape" match="/ROOT/rdf:RDF/rdf:Description" use="sh:targetClass/@rdf:resource"/>
@@ -85,6 +92,14 @@
   <xsl:text>[</xsl:text><xsl:apply-templates select="." mode="reflabel"/><xsl:text>](</xsl:text><xsl:apply-templates select="." mode="link"/><xsl:text>)</xsl:text>
 </xsl:template>
 
+<xsl:template match="@*" mode="shapelink">
+  <xsl:text>#T</xsl:text><xsl:value-of select="replace(.,'^.*[/|#]([^(/|#)]+$)','$1')"/>
+</xsl:template>
+
+<xsl:template match="*" mode="shapeanchor">
+  <xsl:text>[</xsl:text><xsl:apply-templates select="." mode="label"/><xsl:text>]</xsl:text><xsl:text>(</xsl:text><xsl:apply-templates select="@rdf:about" mode="shapelink"/><xsl:text>)</xsl:text>
+</xsl:template>
+
 <xsl:template match="text()|*" mode="header1">
   <xsl:text># </xsl:text><xsl:value-of select="."/><xsl:text>&#xa;</xsl:text>
 </xsl:template>
@@ -99,13 +114,23 @@
 <xsl:template match="*" mode="header3">
   <xsl:variable name="label">
     <xsl:apply-templates select="." mode="label"/>
-    <xsl:if test="starts-with(@rdf:about,$namespace) and ends-with($namespace,'#')"> {#<xsl:value-of select="substring-after(@rdf:about,$namespace)"/>}</xsl:if>
+    <xsl:if test="$doctype='ontology'">
+      <xsl:if test="starts-with(@rdf:about,$namespace) and ends-with($namespace,'#')"> {#<xsl:value-of select="substring-after(@rdf:about,$namespace)"/>}</xsl:if>
+    </xsl:if>
+    <xsl:if test="$doctype='profile'">
+      <xsl:text> {</xsl:text><xsl:apply-templates select="@rdf:about" mode="shapelink"/><xsl:text>}</xsl:text>
+    </xsl:if>
   </xsl:variable>
   <xsl:apply-templates select="$label" mode="header3"/>
 </xsl:template>
 
 <xsl:template match="*" mode="meta-uri">
   <xsl:text>|URI|</xsl:text><xsl:value-of select="@rdf:about"/><xsl:text>|&#xa;</xsl:text>
+  <xsl:text>|-|-|&#xa;</xsl:text>
+</xsl:template>
+
+<xsl:template match="*" mode="meta-target-uri">
+  <xsl:text>|URI|</xsl:text><xsl:value-of select="sh:targetClass/@rdf:resource"/><xsl:text>|&#xa;</xsl:text>
   <xsl:text>|-|-|&#xa;</xsl:text>
 </xsl:template>
 
@@ -164,6 +189,11 @@
   <xsl:apply-templates select="key('blank',rdf:rest/@rdf:nodeID)" mode="recurse"/>
 </xsl:template>
 
+<xsl:template match="*" mode="datatype-link">
+  <xsl:if test="exists(sh:datatype)">
+    <xsl:text>[</xsl:text><xsl:value-of select="substring-after(sh:datatype/@rdf:resource,'#')"/><xsl:text>](</xsl:text><xsl:value-of select="sh:datatype/@rdf:resource"/><xsl:text>)</xsl:text>
+  </xsl:if>
+</xsl:template>
 <xsl:template match="*" mode="meta-datatype">
   <!-- Datatype is afkomstig uit mogelijk meerdere property-shapes -->
   <!-- Eerst verzamelen we alle datatypes uit die propertyshapes. Maar dan nog kan er een "or" situatie optreden, dus die ook nog verzamelen -->
@@ -181,7 +211,7 @@
     <xsl:for-each-group select="$list/*" group-by="sh:datatype/@rdf:resource">
       <xsl:if test="position()!=1 and position()&lt;count($list/*)"><xsl:text>, </xsl:text></xsl:if>
       <xsl:if test="position()!=1 and position()=count($list/*)"><xsl:text> of </xsl:text></xsl:if>
-      <xsl:text>[</xsl:text><xsl:value-of select="substring-after(sh:datatype/@rdf:resource,'#')"/><xsl:text>](</xsl:text><xsl:value-of select="sh:datatype/@rdf:resource"/><xsl:text>)</xsl:text>
+      <xsl:apply-templates select="." mode="datatype-link"/>
     </xsl:for-each-group>
     <xsl:text>|&#xa;</xsl:text>
   </xsl:if>
@@ -199,6 +229,10 @@
   <xsl:text>|&#xa;</xsl:text>
 </xsl:template>
 
+<xsl:template match="*" mode="relatie-link">
+  <xsl:if test="exists(key('resource',sh:node/@rdf:resource))"><xsl:apply-templates select="key('resource',sh:node/@rdf:resource)" mode="shapeanchor"/></xsl:if>
+  <xsl:if test="exists(key('nshape',sh:class/@rdf:resource))"><xsl:apply-templates select="key('nshape',sh:class/@rdf:resource)" mode="shapeanchor"/></xsl:if>
+</xsl:template>
 <xsl:template match="*" mode="meta-relatie">
   <xsl:if test="exists(key('pshape',@rdf:about)/sh:class)">
     <xsl:text>|Gerelateerde klasse|</xsl:text>
@@ -228,6 +262,18 @@
     </xsl:for-each>
     <xsl:text>|&#xa;</xsl:text>
   </xsl:if>
+</xsl:template>
+
+<xsl:template match="*" mode="kardinaliteit">
+  <xsl:choose>
+    <xsl:when test="sh:minCount!=''"><xsl:value-of select="sh:minCount"/></xsl:when>
+    <xsl:otherwise>0</xsl:otherwise>
+  </xsl:choose>
+  <xsl:text>..</xsl:text>
+  <xsl:choose>
+    <xsl:when test="sh:maxCount!=''"><xsl:value-of select="sh:maxCount"/></xsl:when>
+    <xsl:otherwise>n</xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="*" mode="classes">
@@ -263,6 +309,21 @@
   <xsl:apply-templates select="." mode="meta-eigenaar"/>
 </xsl:template>
 
+<xsl:template match="*" mode="nodeshapes">
+  <xsl:apply-templates select="." mode="header3"/>
+  <xsl:apply-templates select="." mode="meta-target-uri"/>
+  <xsl:apply-templates select="." mode="meta-definitie"/>
+  <xsl:text>&#xa;</xsl:text>
+  <xsl:text>|Eigenschap|Kardinaliteit|Datatype/klasse|&#xa;</xsl:text>
+  <xsl:text>|----------|-------------|---------------|&#xa;</xsl:text>
+  <xsl:for-each select="key('resource',sh:property/(@rdf:resource|@rdf:nodeID))">
+    <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="label"/>
+    <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="kardinaliteit"/>
+    <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="datatype-link"/><xsl:apply-templates select="." mode="relatie-link"/>
+    <xsl:text>|&#xa;</xsl:text>
+  </xsl:for-each>
+</xsl:template>
+
 <xsl:template match="rdf:Description" mode="class-hierarchy-leaf">
   <xsl:param name="spaces"/>
   <xsl:value-of select="$spaces"/><xsl:text>- </xsl:text>
@@ -281,24 +342,37 @@
 </xsl:template>
 
 <xsl:template match="/ROOT/rdf:RDF">
-  <xsl:variable name="ontologie">Ontologie</xsl:variable>
+  <!-- If the file contains class definitions, consider it an ontology, otherwise - it must be a profile -->
   <xsl:variable name="klassen">Klassen</xsl:variable>
   <xsl:variable name="relaties">Eigenschappen (relaties)</xsl:variable>
   <xsl:variable name="attributen">Eigenschappen (waarden)</xsl:variable>
-  <xsl:apply-templates select="$ontologie" mode="header1"/>
-  <xsl:apply-templates select="$klassen" mode="header2"/>
-  <xsl:apply-templates select="." mode="class-hierarchy"/>
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class']"><xsl:sort select="concat(key('nshape',@rdf:about)[1]/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
-    <xsl:apply-templates select="." mode="classes"/>
-  </xsl:for-each>
-  <xsl:apply-templates select="$relaties" mode="header2"/>
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#ObjectProperty']"><xsl:sort select="concat(rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
-    <xsl:apply-templates select="." mode="objectproperties"/>
-  </xsl:for-each>
-  <xsl:apply-templates select="$attributen" mode="header2"/>
-  <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#DatatypeProperty']"><xsl:sort select="concat(rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
-    <xsl:apply-templates select="." mode="datatypeproperties"/>
-  </xsl:for-each>
+  <xsl:if test="$doctype='ontology'">
+    <xsl:variable name="modeltype">Ontologie</xsl:variable>
+    <xsl:apply-templates select="$modeltype" mode="header1"/>
+    <xsl:apply-templates select="$klassen" mode="header2"/>
+    <xsl:apply-templates select="." mode="class-hierarchy"/>
+    <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#Class']"><xsl:sort select="concat(key('nshape',@rdf:about)[1]/sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+      <xsl:apply-templates select="." mode="classes"/>
+    </xsl:for-each>
+    <xsl:apply-templates select="$relaties" mode="header2"/>
+    <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#ObjectProperty']"><xsl:sort select="concat(rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+      <xsl:apply-templates select="." mode="objectproperties"/>
+    </xsl:for-each>
+    <xsl:apply-templates select="$attributen" mode="header2"/>
+    <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/2002/07/owl#DatatypeProperty']"><xsl:sort select="concat(rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+      <xsl:apply-templates select="." mode="datatypeproperties"/>
+    </xsl:for-each>
+  </xsl:if>
+  <xsl:if test="$doctype='profile'">
+    <xsl:variable name="modeltype">Toepassingsprofiel</xsl:variable>
+    <xsl:apply-templates select="$modeltype" mode="header1"/>
+    <xsl:text>![](profiel.svg "profiel")</xsl:text>
+    <xsl:text>&#xa;&#xa;</xsl:text>
+    <xsl:apply-templates select="$klassen" mode="header2"/>
+    <xsl:for-each select="rdf:Description[exists(sh:targetClass)]"><xsl:sort select="concat(sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+      <xsl:apply-templates select="." mode="nodeshapes"/>
+    </xsl:for-each>
+  </xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>
