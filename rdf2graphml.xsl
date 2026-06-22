@@ -354,11 +354,11 @@
   <xsl:if test="$shape-subject-uri!=''">
 		<xsl:variable name="subject-geo" select="key('node-geo',$subject-uri)"/>
 		<xsl:if test="not($params='follow') or exists($subject-geo/graphml:data)">
-	    <xsl:for-each select="rdfs:subClassOf[exists(key('resources',@rdf:resource))]">
+	    <xsl:for-each select="rdfs:subClassOf">
 	      <xsl:variable name="shape-object-uri"><xsl:value-of select="key('nodeshapes',@rdf:resource)/@rdf:about"/></xsl:variable>
 	      <xsl:variable name="object-uri">
 	        <xsl:value-of select="$shape-object-uri"/>
-	        <xsl:if test="$shape-object-uri=''"><xsl:value-of select="@rdf:resource"/></xsl:if>
+	        <xsl:if test="$shape-object-uri=''"><xsl:value-of select="key('resources',@rdf:resource)/@rdf:about"/></xsl:if>
 	      </xsl:variable>
 	      <xsl:if test="$shape-object-uri!=''">
 	        <xsl:variable name="object-geo" select="key('node-geo',$object-uri)"/>
