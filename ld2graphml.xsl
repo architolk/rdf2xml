@@ -6,6 +6,7 @@
   xmlns:sh="http://www.w3.org/ns/shacl#"
   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
   xmlns:graphml="http://graphml.graphdrawing.org/xmlns"
+  xmlns:ui="http://www.w3.org/ns/ui#"
   xmlns:y="http://www.yworks.com/xml/graphml"
 >
 
@@ -72,18 +73,35 @@
 <xsl:template match="rdf:Description" mode="node">
   <xsl:variable name="subject-uri" select="@rdf:about|@rdf:nodeID"/>
   <xsl:variable name="geo" select="key('node-geo',$subject-uri)"/>
+  <xsl:variable name="shapename"><xsl:value-of select="key('nshape',rdf:type/@rdf:resource)/sh:name"/></xsl:variable>
+  <xsl:variable name="shapecolor"><xsl:value-of select="key('nshape',rdf:type/@rdf:resource)/ui:color"/></xsl:variable>
+  <xsl:variable name="shapetype">
+    <xsl:choose>
+      <xsl:when test="$shapename!=''">roundrectangle</xsl:when>
+      <xsl:otherwise>ellipse</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="label">
+    <xsl:if test="$shapename!=''"><xsl:text>«</xsl:text><xsl:value-of select="$shapename"/><xsl:text>»&#xa;</xsl:text></xsl:if>
+    <xsl:apply-templates select="." mode="label"/>
+  </xsl:variable>
+  <xsl:variable name="color">
+    <xsl:value-of select="$shapecolor"/>
+    <xsl:if test="$shapecolor=''">#FFCC00</xsl:if>
+  </xsl:variable>
   <node id="{$subject-uri}">
 		<data key="d3"><xsl:value-of select="$subject-uri"/></data>
 		<data key="d6">
       <y:ShapeNode>
         <xsl:choose>
+          <xsl:when test="exists($geo/graphml:data/y:ShapeNode/y:Geometry)"><xsl:copy-of select="$geo/graphml:data/y:ShapeNode/y:Geometry"/></xsl:when>
           <xsl:when test="@rdf:nodeID!=''"><y:Geometry height="40.0" width="40.0" x="365.0" y="294.0"/></xsl:when>
           <xsl:otherwise><y:Geometry height="66.0" width="205.0" x="365.0" y="294.0"/></xsl:otherwise>
         </xsl:choose>
-        <y:Fill color="#FFCC00" transparent="false"/>
+        <y:Fill color="{$color}" transparent="false"/>
         <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
-        <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="32.11328125" x="86.443359375" xml:space="preserve" y="23.93359375"><xsl:apply-templates select="." mode="label"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
-        <y:Shape type="ellipse"/>
+        <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="32.11328125" x="86.443359375" xml:space="preserve" y="23.93359375"><xsl:value-of select="$label"/><y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
+        <y:Shape type="{$shapetype}"/>
       </y:ShapeNode>
 		</data>
 	</node>
@@ -98,6 +116,11 @@
       <xsl:variable name="object-uri" select="@rdf:resource|@rdf:nodeID"/>
       <xsl:variable name="property-uri" select="concat(namespace-uri(.),local-name(.))"/>
       <xsl:variable name="statement-uri"><xsl:value-of select="$subject-uri"/><xsl:value-of select="$property-uri"/><xsl:value-of select="$object-uri"/></xsl:variable>
+      <xsl:variable name="shapename"><xsl:value-of select="key('pshape',$property-uri)/sh:name[1]"/></xsl:variable> <!-- Not quite correct - different propertyshapes might have different names -->
+      <xsl:variable name="label">
+        <xsl:value-of select="$shapename"/>
+        <xsl:if test="$shapename=''"><xsl:apply-templates select="." mode="property-label"/></xsl:if>
+      </xsl:variable>
       <xsl:if test="not($params='shaped') or key('resource',key('nshape',../rdf:type/@rdf:resource)/sh:property/(@rdf:resource|@rdf:nodeID))/sh:path/@rdf:resource=$property-uri">
         <edge source="{$subject-uri}" target="{$object-uri}">
           <data key="d7"><xsl:value-of select="$statement-uri"/></data>
@@ -107,7 +130,7 @@
               <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
               <y:LineStyle color="#000000" type="line" width="1.0"/>
               <y:Arrows source="none" target="standard"/>
-              <y:EdgeLabel alignment="center" anchorX="66.16976041841713" anchorY="44.44649798225862" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" upX="0.4595559136184651" upY="-0.8881488401491598" verticalTextPosition="bottom" visible="true" width="65.658203125" x="66.16976041841713" xml:space="preserve" y="28.341861591741434"><xsl:apply-templates select="." mode="property-label"/><y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="true" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
+              <y:EdgeLabel alignment="center" anchorX="66.16976041841713" anchorY="44.44649798225862" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" upX="0.4595559136184651" upY="-0.8881488401491598" verticalTextPosition="bottom" visible="true" width="65.658203125" x="66.16976041841713" xml:space="preserve" y="28.341861591741434"><xsl:value-of select="$label"/><y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="true" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>
               <y:BendStyle smoothed="false"/>
             </y:PolyLineEdge>
           </data>
@@ -116,7 +139,7 @@
     </xsl:if>
   </xsl:for-each>
   <!-- Edges to other non-blank node resources that don't exist-->
-  <xsl:for-each select="*[exists(@rdf:resource) and (not(exists(key('resource',@rdf:resource))))]">
+  <xsl:for-each select="*[exists(@rdf:resource) and ((not(exists(key('resource',@rdf:resource)))) or ($params='shaped' and not(exists(key('nshape',key('resource',@rdf:resource)/rdf:type/@rdf:resource)))))]">
     <xsl:variable name="object-uri" select="@rdf:resource"/>
     <xsl:variable name="property-uri" select="concat(namespace-uri(.),local-name(.))"/>
     <xsl:variable name="statement-uri"><xsl:value-of select="$subject-uri"/><xsl:value-of select="$property-uri"/><xsl:value-of select="$object-uri"/></xsl:variable>
