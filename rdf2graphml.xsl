@@ -77,6 +77,12 @@
     </xsl:variable>
     <xsl:text> [</xsl:text><xsl:value-of select="$mincount"/><xsl:text>,</xsl:text><xsl:value-of select="$maxcount"/><xsl:text>]</xsl:text>
   </xsl:if>
+  <xsl:if test="sh:hasValue!=''">
+    <xsl:text> = "</xsl:text><xsl:value-of select="sh:hasValue"/><xsl:text>"</xsl:text>
+  </xsl:if>
+  <xsl:if test="sh:hasValue/@rdf:resource!=''">
+    <xsl:text> = </xsl:text><xsl:value-of select="replace(sh:hasValue/@rdf:resource,'^.*(#|/)([^(#|/)]+)$','$2')"/>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="/">
