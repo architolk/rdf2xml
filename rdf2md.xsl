@@ -312,7 +312,7 @@
   <xsl:apply-templates select="." mode="meta-eigenaar"/>
 </xsl:template>
 
-<xsl:template match="*" mode="nodeshapes">
+<xsl:template match="*" mode="nodeshapes-classes">
   <xsl:apply-templates select="." mode="header3"/>
   <xsl:apply-templates select="." mode="meta-target-uri"/>
   <xsl:apply-templates select="." mode="meta-definitie"/>
@@ -326,6 +326,33 @@
     <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="datatype-link"/><xsl:apply-templates select="." mode="relatie-link"/>
     <xsl:text>|&#xa;</xsl:text>
   </xsl:for-each>
+</xsl:template>
+
+<xsl:template match="*" mode="nodeshapes-nodes">
+  <xsl:apply-templates select="." mode="header3"/>
+  <xsl:choose>
+    <xsl:when test="key('resource',sh:property/(@rdf:resource|@rdf:nodeID))/sh:path/@rdf:resource='http://www.w3.org/2004/02/skos/core#inScheme'">
+      <xsl:text>|Waarde|Omschrijving|&#xa;</xsl:text>
+      <xsl:text>|------|------------|&#xa;</xsl:text>
+      <xsl:variable name="scheme" select="key('resource',sh:property/(@rdf:resource|@rdf:nodeID))/sh:hasValue/@rdf:resource"/>
+      <xsl:for-each select="key('concepts',$scheme)">
+        <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="label"/>
+        <xsl:text>|</xsl:text>
+        <xsl:text>|&#xa;</xsl:text>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:when test="exists(key('resource',sh:property/(@rdf:resource|@rdf:nodeID)))">
+      <xsl:text>|Eigenschap|Kardinaliteit|Datatype/klasse|&#xa;</xsl:text>
+      <xsl:text>|----------|-------------|---------------|&#xa;</xsl:text>
+      <xsl:for-each select="key('resource',sh:property/(@rdf:resource|@rdf:nodeID))">
+        <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="label"/>
+        <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="kardinaliteit"/>
+        <xsl:text>|</xsl:text><xsl:apply-templates select="." mode="datatype-link"/><xsl:apply-templates select="." mode="relatie-link"/>
+        <xsl:text>|&#xa;</xsl:text>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:otherwise />
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="class-hierarchy-leaf">
@@ -350,6 +377,7 @@
   <xsl:variable name="klassen">Klassen</xsl:variable>
   <xsl:variable name="relaties">Eigenschappen (relaties)</xsl:variable>
   <xsl:variable name="attributen">Eigenschappen (waarden)</xsl:variable>
+  <xsl:variable name="datatypes">Datatypes</xsl:variable>
   <xsl:if test="$doctype='ontology'">
     <xsl:variable name="modeltype">Ontologie</xsl:variable>
     <xsl:apply-templates select="$modeltype" mode="header1"/>
@@ -374,7 +402,11 @@
     <xsl:text>&#xa;&#xa;</xsl:text>
     <xsl:apply-templates select="$klassen" mode="header2"/>
     <xsl:for-each select="rdf:Description[exists(sh:targetClass)]"><xsl:sort select="concat(sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
-      <xsl:apply-templates select="." mode="nodeshapes"/>
+      <xsl:apply-templates select="." mode="nodeshapes-classes"/>
+    </xsl:for-each>
+    <xsl:apply-templates select="$datatypes" mode="header2"/>
+    <xsl:for-each select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape' and not(exists(sh:targetClass))]"><xsl:sort select="concat(sh:name[1],rdfs:label[@xml:lang=$lang],rdfs:label[1])"/>
+      <xsl:apply-templates select="." mode="nodeshapes-nodes"/>
     </xsl:for-each>
   </xsl:if>
 </xsl:template>
