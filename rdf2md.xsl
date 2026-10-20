@@ -135,11 +135,14 @@
 </xsl:template>
 
 <xsl:template match="*" mode="meta-specialisatie">
-  <xsl:if test="exists(rdfs:subClassOf)">
+  <xsl:if test="exists(rdfs:subClassOf|key('resource',sh:targetClass/@rdf:resource)/rdfs:subClassOf)">
     <xsl:text>|Specialisatie van|</xsl:text>
-    <xsl:for-each select="rdfs:subClassOf/@rdf:resource">
+    <xsl:for-each select="(rdfs:subClassOf|key('resource',sh:targetClass/@rdf:resource)/rdfs:subClassOf)/@rdf:resource">
       <xsl:if test="position()!=1"><xsl:text>, </xsl:text></xsl:if>
-      <xsl:apply-templates select="." mode="anchor"/>
+      <xsl:choose>
+        <xsl:when test="$doctype='profile' and exists(key('nshape',.))"><xsl:apply-templates select="key('nshape',.)" mode="shapeanchor"/></xsl:when>
+        <xsl:otherwise><xsl:apply-templates select="." mode="anchor"/></xsl:otherwise>
+      </xsl:choose>
     </xsl:for-each>
     <xsl:text>|&#xa;</xsl:text>
   </xsl:if>
@@ -313,6 +316,7 @@
   <xsl:apply-templates select="." mode="header3"/>
   <xsl:apply-templates select="." mode="meta-target-uri"/>
   <xsl:apply-templates select="." mode="meta-definitie"/>
+  <xsl:apply-templates select="." mode="meta-specialisatie"/>
   <xsl:text>&#xa;</xsl:text>
   <xsl:text>|Eigenschap|Kardinaliteit|Datatype/klasse|&#xa;</xsl:text>
   <xsl:text>|----------|-------------|---------------|&#xa;</xsl:text>
