@@ -3,6 +3,7 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
   xmlns:sh="http://www.w3.org/ns/shacl#"
   xmlns:skos="http://www.w3.org/2004/02/skos/core#"
   xmlns:graphml="http://graphml.graphdrawing.org/xmlns"
@@ -103,6 +104,7 @@
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="edge"/>
   <xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="logic"/>
   <xsl:apply-templates select="rdf:Description[exists(rdfs:subClassOf/@rdf:resource)]" mode="gen"/>
+  <xsl:apply-templates select="rdf:Description[exists((owl:unionOf|owl:disjointUnionOf)/@rdf:nodeID)]" mode="union"/>
 	<xsl:apply-templates select="rdf:Description[rdf:type/@rdf:resource='http://www.w3.org/ns/shacl#NodeShape']" mode="role"/>
 </xsl:template>
 
@@ -389,6 +391,49 @@
 	    </xsl:for-each>
 		</xsl:if>
   </xsl:if>
+</xsl:template>
+
+<xsl:template match="rdf:Description" mode="union">
+  <xsl:variable name="shape-object-uri"><xsl:value-of select="key('nodeshapes',@rdf:about)/@rdf:about"/></xsl:variable>
+  <xsl:variable name="union-type">
+    <xsl:choose>
+      <xsl:when test="exists(owl:disjointUnionOf)">disjoint, complete</xsl:when>
+      <xsl:when test="exists(owl:unionOf)">complete</xsl:when>
+      <xsl:otherwise />
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:if test="$shape-object-uri!=''">
+    <xsl:apply-templates select="key('blanks',(owl:unionOf|owl:disjointUnionOf)/@rdf:nodeID)" mode="union-rec">
+      <xsl:with-param name="shape-object-uri" select="$shape-object-uri"/>
+      <xsl:with-param name="union-type" select="$union-type"/>
+    </xsl:apply-templates>
+  </xsl:if>
+</xsl:template>
+<xsl:template match="rdf:Description" mode="union-rec">
+  <xsl:param name="shape-object-uri"/>
+  <xsl:param name="union-type"/>
+  <xsl:variable name="shape-subject-uri"><xsl:value-of select="key('nodeshapes',rdf:first/@rdf:resource)/@rdf:about"/></xsl:variable>
+  <xsl:if test="$shape-subject-uri!=''">
+    <edge source="{$shape-subject-uri}" target="{$shape-object-uri}">
+      <data key="d7" />
+      <data key="d8" />
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="white_delta"/>
+          <y:EdgeLabel alignment="center" backgroundColor="#FFFFFF" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" verticalTextPosition="bottom" visible="true" width="116.564453125" x="26.43731689453125" xml:space="preserve" y="-9.06640625"><xsl:text>{</xsl:text><xsl:value-of select="$union-type"/><xsl:text>}</xsl:text><y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel>
+            <y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="center" ratio="0.5" segment="0"/></y:ModelParameter>
+            <y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+  </xsl:if>
+  <xsl:apply-templates select="key('blanks',rdf:rest/@rdf:nodeID)" mode="union-rec">
+    <xsl:with-param name="shape-object-uri" select="$shape-object-uri"/>
+    <xsl:with-param name="union-type" select="$union-type"/>
+  </xsl:apply-templates>
 </xsl:template>
 
 <xsl:template match="rdf:Description" mode="role">
